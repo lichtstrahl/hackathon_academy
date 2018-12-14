@@ -29,6 +29,7 @@
 *  Поиск альбома по его ID:
 
       theaudiodb.com/api/v1/json/{APIKEY}/album.php?m={albumid}
+      
 
 
 
@@ -50,3 +51,10 @@ Small Image - **theaudiodb.com/images/media/artist/thumb/xxtwus1340291734.jpg/pr
 
 Кажется это должно помочь с извлечением информации из mp3-файла
 https://github.com/mpatric/mp3agic
+
+
+
+# Альтернативный вариант:
+      https://lyricsovh.docs.apiary.io/#
+      http://api.lololyrics.com/
+
