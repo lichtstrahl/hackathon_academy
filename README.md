@@ -1,3 +1,9 @@
+
+![](https://github.com/lichtstrahl/hackathon_academy/blob/music_info/screenshots/device-2018-12-15-231054.png)
+![](https://github.com/lichtstrahl/hackathon_academy/blob/music_info/screenshots/device-2018-12-15-231126.png)
+![](https://github.com/lichtstrahl/hackathon_academy/blob/music_info/screenshots/device-2018-12-15-231141.png)
+![](https://github.com/lichtstrahl/hackathon_academy/blob/music_info/screenshots/device-2018-12-15-231158.png)
+
 # hackathon_academy
 Хакатон. Android Academy 2018
 

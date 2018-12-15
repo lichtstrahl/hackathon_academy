@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Info Framgnet -->
+    <dimen name="progressBarSize">50dp</dimen>
+    <dimen name="trackTextWidth">300dp</dimen>
+    <dimen name="trackTextHeight">400dp</dimen>
+    <dimen name="stdMargin">8dp</dimen>
+    <dimen name="bigMargin">15dp</dimen>
+
+    <dimen name="stdText">12sp</dimen>
+    <dimen name="bigText">16sp</dimen>
+    <dimen name="xText">20sp</dimen>
+    <dimen name="xxText">24sp</dimen>
+    <dimen name="imageHeight">200dp</dimen>
+
+    <dimen name="stdIcon">50dp</dimen>
+    <dimen name="xIcon">65dp</dimen>
+    <dimen name="xxIcon">80dp</dimen>
+
+</resources>
