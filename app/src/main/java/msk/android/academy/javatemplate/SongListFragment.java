@@ -9,11 +9,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,7 +27,7 @@ import java.util.ArrayList;
 import msk.android.academy.javatemplate.adapter.SongAdapter;
 import msk.android.academy.javatemplate.model.Song;
 
-public class SongListActivity extends AppCompatActivity {
+public class SongListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private SongAdapter adapter;
@@ -32,32 +38,35 @@ public class SongListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.song_list_activity);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //super.onCreate(savedInstanceState);
+        //setContentView(R.layout.song_list_activity);
+        View view = inflater.inflate(R.layout.song_list_activity, container, false);
 
-        init();
+        init(view);
         adapter();
         getAllMediaMp3Files();
+
+        return view;
     }
 
-    private void init() {
+    private void init(View view) {
         listSongs = new ArrayList<>();
-        recyclerView = findViewById(R.id.list);
+        recyclerView = view.findViewById(R.id.list);
     }
 
     private void adapter() {
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        adapter = new SongAdapter(this, listSongs);
+        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        adapter = new SongAdapter(getContext(), listSongs);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
 
     private void getAllMediaMp3Files() {
-        contentResolver = getContentResolver();
+        contentResolver = getContext().getContentResolver();
         uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
         cursor = contentResolver.query(
@@ -69,9 +78,9 @@ public class SongListActivity extends AppCompatActivity {
         );
 
         if (cursor == null) {
-            Toast.makeText(getApplicationContext(), "Something Went Wrong.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Something Went Wrong.", Toast.LENGTH_LONG).show();
         } else if (!cursor.moveToFirst()) {
-            Toast.makeText(getApplicationContext(), "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else {
 
             int Title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);

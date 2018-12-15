@@ -2,9 +2,9 @@ package msk.android.academy.javatemplate.adapter;
 
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
-import msk.android.academy.javatemplate.PlayerActivity;
+import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
+import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
@@ -58,6 +61,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         return songsList.size();
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(Song song);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView songTextView;
         private TextView artistTextView;
@@ -77,7 +84,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PlayerActivity.start(context, songsList, position);
+                    //PlayerFragment.start(context, songsList, position);
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        EventBus.getDefault().post(new SongClickEvent(songsList, position));
+                    }
                 }
             });
         }

@@ -19,7 +19,6 @@ import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -98,7 +97,7 @@ public class MusicService extends Service implements
 
     //binder
     public class MusicBinder extends Binder {
-        MusicService getService() {
+        public MusicService getService() {
             return MusicService.this;
         }
     }
@@ -170,7 +169,7 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, SongListActivity.class);
+        Intent notIntent = new Intent(this, SongListFragment.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
