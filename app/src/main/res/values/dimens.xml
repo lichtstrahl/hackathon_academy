@@ -11,7 +11,7 @@
     <dimen name="bigText">16sp</dimen>
     <dimen name="xText">20sp</dimen>
     <dimen name="xxText">24sp</dimen>
-    <dimen name="imageHeight">200dp</dimen>
+    <dimen name="imageHeight">280dp</dimen>
 
     <dimen name="stdIcon">50dp</dimen>
     <dimen name="xIcon">65dp</dimen>

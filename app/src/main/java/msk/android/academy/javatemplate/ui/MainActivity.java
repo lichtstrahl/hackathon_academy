@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupFragment() {
-        InfoFragment f = InfoFragment.getInstance("Rammstein", "assd");
+        InfoFragment f = InfoFragment.getInstance("Rammstein", "Mutter");
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layoutBG, f)

@@ -1,19 +1,19 @@
 package msk.android.academy.javatemplate.network;
 
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
-import msk.android.academy.javatemplate.network.dto.MusicResponse;
+import msk.android.academy.javatemplate.network.dto.LyricResponse;
 
 public class FullInfo {
-    private MusicResponse musicResponse;
+    private LyricResponse lyricResponse;
     private InfoResponse infoResponse;
 
-    public FullInfo(MusicResponse musicResponse, InfoResponse infoResponse) {
-        this.musicResponse = musicResponse;
+    public FullInfo(LyricResponse lyricResponse, InfoResponse infoResponse) {
+        this.lyricResponse = lyricResponse;
         this.infoResponse = infoResponse;
     }
 
-    public MusicResponse getMusicResponse() {
-        return musicResponse;
+    public LyricResponse getLyricResponse() {
+        return lyricResponse;
     }
 
     public InfoResponse getInfoResponse() {
