@@ -33,6 +33,8 @@ public class SongListActivity extends AppCompatActivity {
         init();
         adapter();
         getAllMediaMp3Files();
+
+        PlayerActivity.start(this, listSongs, 0);
     }
 
     private void init() {
@@ -81,7 +83,7 @@ public class SongListActivity extends AppCompatActivity {
                 String SongArtist = cursor.getString(Artist);
                 int SongDuration = cursor.getInt(duration);
 
-                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), finalSuccessfulUri));
+                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), /*finalSuccessfulUri*/SongID));
 
             } while (cursor.moveToNext());
         }

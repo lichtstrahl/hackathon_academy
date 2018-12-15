@@ -35,7 +35,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         viewHolder.songTextView.setText(songsList.get(position).getTitle());
         viewHolder.artistTextView.setText(songsList.get(position).getArtist());
         viewHolder.durationTextView.setText(songsList.get(position).getDuration());
-        viewHolder.songId = songsList.get(position).getAudioResourceId();
+        //viewHolder.songId = songsList.get(position).getAudioResourceId();
     }
 
     @Override
