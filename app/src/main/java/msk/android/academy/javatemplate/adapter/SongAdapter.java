@@ -49,7 +49,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
         Glide.with(context)
                 .asBitmap()
-                .apply()
                 .load(albumArtUri)
                 .into(viewHolder.image);
     }
