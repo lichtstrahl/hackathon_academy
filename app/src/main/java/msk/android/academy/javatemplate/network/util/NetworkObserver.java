@@ -2,12 +2,13 @@ package msk.android.academy.javatemplate.network.util;
 
 import android.support.annotation.Nullable;
 
+import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import msk.android.academy.javatemplate.ui.App;
 
-public class NetworkObserver<T> implements SingleObserver<T> {
+public class NetworkObserver<T> implements Observer<T> {
     private Disposable disposable;
     @Nullable
     private Consumer<Throwable> error;
@@ -20,12 +21,16 @@ public class NetworkObserver<T> implements SingleObserver<T> {
     }
 
     @Override
-    public void onSuccess(T result) {
+    public void onNext(T result) {
         try {
             if (complete != null) complete.accept(result);
         } catch (Exception e) {
             App.logE(e.getMessage());
         }
+    }
+
+    @Override
+    public void onComplete() {
     }
 
     @Override

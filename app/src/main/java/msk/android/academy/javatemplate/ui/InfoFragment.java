@@ -1,6 +1,5 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,20 +10,24 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
+import msk.android.academy.javatemplate.network.FullInfo;
+import msk.android.academy.javatemplate.network.InfoResponse;
 import msk.android.academy.javatemplate.network.MusicResponse;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
     private static final String INTENT_TRACK = "args:track";
-    private NetworkObserver<MusicResponse> lyricObserver;
     private String artist;
     private String track;
     private ProgressBar progressLoad;
     private TextView viewTrackText;
+    private NetworkObserver<FullInfo> loadObserver;
 
     @Nullable
     @Override
@@ -39,24 +42,28 @@ public class InfoFragment extends Fragment {
 
         progressLoad = view.findViewById(R.id.progressLoad);
         viewTrackText = view.findViewById(R.id.viewTrackText);
-
-        lyricObserver = new NetworkObserver<>(this::successfulLyric, this::errorNetwork);
+        loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        App.getLyricAPI().getText(artist, track)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(lyricObserver);
+        Observable singleTrack = App.getLyricAPI().getText(artist, track);
+        Observable singleInfo = App.getInfoAPI().searchArtist(artist);
+
+        Observable.combineLatest(
+                singleTrack, singleInfo,
+                (MusicResponse trackText, InfoResponse trackInfo) -> new FullInfo(trackText, trackInfo))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadObserver);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        lyricObserver.unsubscribe();
+        loadObserver.unsubscribe();
     }
 
     public static InfoFragment getInstance(String artist, String track) {
@@ -74,6 +81,19 @@ public class InfoFragment extends Fragment {
         } else {
             viewTrackText.setText(res.getError());
         }
+        progressLoad.setVisibility(View.GONE);
+    }
+
+    private void successfulLoad(FullInfo info) {
+        InfoResponse infoResponse = info.getInfoResponse();
+        MusicResponse musicResponse = info.getMusicResponse();
+
+        if (musicResponse.getError() == null) {
+            viewTrackText.setText(musicResponse.getLyrics());
+        } else {
+            viewTrackText.setText(musicResponse.getError());
+        }
+
         progressLoad.setVisibility(View.GONE);
     }
 

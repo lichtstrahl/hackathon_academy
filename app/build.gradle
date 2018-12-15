@@ -11,7 +11,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         buildConfigField("String", "TAG_GLOBAL", "\"Music\"")
-        buildConfigField("String", "BASE_URL", "\"https://api.lyrics.ovh\"")
+        buildConfigField("String", "BASE_URL_LYRIC", "\"http://api.lyrics.ovh\"")
+        buildConfigField("String", "BASE_URL_INFO", "\"http://theaudiodb.com\"")
     }
     buildTypes {
         release {
