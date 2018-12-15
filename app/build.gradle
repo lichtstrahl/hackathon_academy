@@ -8,7 +8,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
     buildTypes {
@@ -21,10 +21,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.android.support:appcompat-v7:$support_libs_version"
-    implementation "com.android.support:recyclerview-v7:$support_libs_version"
-    implementation "com.android.support:cardview-v7:$support_libs_version"
-    implementation "com.android.support.constraint:constraint-layout:$constraint_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+
+    //material
+    implementation "com.google.android.material:material:1.0.0"
 
     //dagger2
     //implementation  "com.google.dagger:dagger:$dagger2_version"
@@ -42,12 +45,12 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     //Room
-    implementation "android.arch.persistence.room:runtime:$room_version"
-    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
-    implementation "android.arch.persistence.room:rxjava2:$room_version"
+    implementation 'androidx.room:room-runtime:2.1.0-alpha03'
+    annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha03'
+    implementation 'androidx.room:room-rxjava2:2.1.0-alpha03'
 
     //LiveData + ViewModel
-    implementation "android.arch.lifecycle:extensions:$jetpack_version"
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
 
     //Firebase
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
