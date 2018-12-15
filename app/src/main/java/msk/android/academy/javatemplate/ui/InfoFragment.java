@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,7 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -18,16 +20,16 @@ import msk.android.academy.javatemplate.network.util.NetworkObserver;
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
     private static final String INTENT_TRACK = "args:track";
-    private Button buttonNetwork;
     private NetworkObserver<MusicResponse> lyricObserver;
     private String artist;
     private String track;
+    private ProgressBar progressLoad;
+    private TextView viewTrackText;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
-        buttonNetwork = view.findViewById(R.id.buttonNetwork);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -35,16 +37,26 @@ public class InfoFragment extends Fragment {
             track = bundle.getString(INTENT_TRACK);
         }
 
+        progressLoad = view.findViewById(R.id.progressLoad);
+        viewTrackText = view.findViewById(R.id.viewTrackText);
+
         lyricObserver = new NetworkObserver<>(this::successfulLyric, this::errorNetwork);
-
-        buttonNetwork.setOnClickListener((b) -> {
-            App.getLyricAPI().getText(artist, track)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(lyricObserver);
-        });
-
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        App.getLyricAPI().getText(artist, track)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(lyricObserver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        lyricObserver.unsubscribe();
     }
 
     public static InfoFragment getInstance(String artist, String track) {
@@ -57,10 +69,16 @@ public class InfoFragment extends Fragment {
     }
 
     private void successfulLyric(MusicResponse res) {
-        App.logI(res.getLyrics());
+        if (res.getError() == null) {
+            viewTrackText.setText(res.getLyrics());
+        } else {
+            viewTrackText.setText(res.getError());
+        }
+        progressLoad.setVisibility(View.GONE);
     }
 
     private void errorNetwork(Throwable t) {
+        progressLoad.setVisibility(View.GONE);
         App.logE(t.getMessage());
     }
 }

@@ -4,17 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="Фрагмент"/>
+    <ProgressBar
+        android:id="@+id/progressLoad"
+        android:layout_width="@dimen/progressBarSize"
+        android:layout_height="@dimen/progressBarSize"
+        android:layout_centerHorizontal="true"/>
 
-    <Button
-        android:id="@+id/buttonNetwork"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title"/>
+    <ScrollView
+        android:id="@+id/srollText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/trackTextHeight"
+        android:layout_below="@id/progressLoad"
+        android:layout_margin="@dimen/stdMargin">
+        <TextView
+            android:id="@+id/viewTrackText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
 </RelativeLayout>
