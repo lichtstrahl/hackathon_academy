@@ -1,5 +1,7 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,6 +9,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -20,6 +24,7 @@ import msk.android.academy.javatemplate.network.FullInfo;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.MusicResponse;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 
 public class InfoFragment extends Fragment {
@@ -33,6 +38,8 @@ public class InfoFragment extends Fragment {
     private TextView viewStyle;
     private TextView viewGenre;
     private TextView viewBiography;
+    private ImageView viewArtistArt;
+    private ImageButton buttonFacebook;
     private NetworkObserver<FullInfo> loadObserver;
 
     @Nullable
@@ -51,6 +58,9 @@ public class InfoFragment extends Fragment {
         viewStyle = view.findViewById(R.id.viewStyle);
         viewGenre = view.findViewById(R.id.viewGenre);
         viewBiography = view.findViewById(R.id.viewBiography);
+        viewArtistArt = view.findViewById(R.id.viewImage);
+        buttonFacebook = view.findViewById(R.id.buttonFacebook);
+
 
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
         return view;
@@ -114,8 +124,23 @@ public class InfoFragment extends Fragment {
             viewBiography.setText(artist.getBiographyEn());
         }
 
+        GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
 
+        if (artist.getFacebookUrl() != null) {
+            buttonFacebook.setOnClickListener(btn -> {
+                String url = artist.getFacebookUrl();
+                if (!url.startsWith("http://") && !url.startsWith("https://"))
+                    url = "http://" + url;
 
+                Intent facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                try {
+                    startActivity(facebookIntent);
+                } catch (Exception e){
+                    App.logE(e.getMessage());
+                }
+
+            });
+        }
 
         progressLoad.setVisibility(View.GONE);
     }

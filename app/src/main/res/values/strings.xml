@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JavaTemplate</string>
+    <string name="artistArt">Изображение артиста</string>
 </resources>

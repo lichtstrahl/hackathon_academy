@@ -13,6 +13,10 @@ public class ArtistDTO {
     String biographyRu;
     @SerializedName("strBiographyEN")
     String biographyEn;
+    @SerializedName("strArtistFanart")
+    String artUrl;
+    @SerializedName("strFacebook")
+    String facebookUrl;
 
     public String getArtistName() {
         return artistName;
@@ -32,5 +36,13 @@ public class ArtistDTO {
 
     public String getBiographyEn() {
         return biographyEn;
+    }
+
+    public String getArtUrl() {
+        return artUrl;
+    }
+
+    public String getFacebookUrl() {
+        return facebookUrl;
     }
 }

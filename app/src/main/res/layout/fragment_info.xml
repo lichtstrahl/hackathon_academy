@@ -65,11 +65,29 @@
             android:maxLines="1"
             android:textSize="@dimen/bigText"
             tools:text="@tools:sample/full_names" />
+
+        <ImageView
+            android:id="@+id/viewImage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/imageHeight"
+            android:layout_below="@id/viewStyle"
+            android:contentDescription="@string/artistArt"/>
+
         <TextView
             android:id="@+id/viewBiography"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/viewStyle"
+            android:layout_below="@id/viewImage"
             android:textSize="@dimen/bigText"/>
+
+        <ImageButton
+            android:id="@+id/buttonFacebook"
+            android:layout_width="@dimen/xIcon"
+            android:layout_height="@dimen/xIcon"
+            android:layout_below="@id/viewBiography"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_facebook"
+            android:backgroundTint="@android:color/transparent"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 </ScrollView>
