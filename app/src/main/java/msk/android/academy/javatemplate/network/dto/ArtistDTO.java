@@ -17,6 +17,10 @@ public class ArtistDTO {
     String artUrl;
     @SerializedName("strFacebook")
     String facebookUrl;
+    @SerializedName("strArtistLogo")
+    String artistLogoUrl;
+    @SerializedName("strWebsite")
+    String webSiteUrl;
 
     public String getArtistName() {
         return artistName;
@@ -44,5 +48,13 @@ public class ArtistDTO {
 
     public String getFacebookUrl() {
         return facebookUrl;
+    }
+
+    public String getArtistLogoUrl() {
+        return artistLogoUrl;
+    }
+
+    public String getWebSiteUrl() {
+        return webSiteUrl;
     }
 }

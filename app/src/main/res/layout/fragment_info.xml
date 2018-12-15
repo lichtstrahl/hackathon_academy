@@ -15,13 +15,20 @@
             android:layout_height="@dimen/progressBarSize"
             android:layout_centerHorizontal="true"
             tools:visibility="gone"/>
+        <TextView
+            android:id="@+id/viewTrackName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/progressLoad"
+            android:maxLines="1" />
 
         <android.support.v7.widget.CardView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/cardText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/trackTextHeight"
-            android:layout_below="@id/progressLoad"
+            android:layout_below="@id/viewTrackName"
             android:layout_margin="@dimen/stdMargin"
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/backgroundText"
@@ -78,16 +85,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/viewImage"
+            android:layout_marginStart="@dimen/stdMargin"
+            android:layout_marginEnd="@dimen/stdMargin"
             android:textSize="@dimen/bigText"/>
 
-        <ImageButton
-            android:id="@+id/buttonFacebook"
-            android:layout_width="@dimen/xIcon"
-            android:layout_height="@dimen/xIcon"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@id/viewBiography"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_facebook"
-            android:backgroundTint="@android:color/transparent"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true">
+            <ImageButton
+                android:id="@+id/buttonFacebook"
+                android:layout_width="@dimen/xIcon"
+                android:layout_height="@dimen/xIcon"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_facebook"
+                android:backgroundTint="@android:color/transparent"/>
+
+            <ImageButton
+                android:id="@+id/buttonWebSite"
+                android:layout_width="@dimen/xIcon"
+                android:layout_height="@dimen/xIcon"
+                android:scaleType="centerCrop"
+                android:backgroundTint="@android:color/transparent"/>
+        </LinearLayout>
+
+
     </RelativeLayout>
 </ScrollView>

@@ -26,6 +26,7 @@ import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.MusicResponse;
 import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
+import msk.android.academy.javatemplate.network.util.UrlAdapter;
 
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
@@ -39,7 +40,9 @@ public class InfoFragment extends Fragment {
     private TextView viewGenre;
     private TextView viewBiography;
     private ImageView viewArtistArt;
+    private TextView viewTrackName;
     private ImageButton buttonFacebook;
+    private ImageButton buttonWebSite;
     private NetworkObserver<FullInfo> loadObserver;
 
     @Nullable
@@ -47,19 +50,15 @@ public class InfoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            artist = bundle.getString(INTENT_ARTIST);
-            track = bundle.getString(INTENT_TRACK);
-        }
-
         progressLoad = view.findViewById(R.id.progressLoad);
         viewTrackText = view.findViewById(R.id.viewTrackText);
         viewStyle = view.findViewById(R.id.viewStyle);
         viewGenre = view.findViewById(R.id.viewGenre);
         viewBiography = view.findViewById(R.id.viewBiography);
         viewArtistArt = view.findViewById(R.id.viewImage);
+        viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
+        buttonWebSite = view.findViewById(R.id.buttonWebSite);
 
 
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
@@ -69,6 +68,15 @@ public class InfoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            artist = bundle.getString(INTENT_ARTIST);
+            track = bundle.getString(INTENT_TRACK);
+            getActivity().setTitle(artist);
+            viewTrackName.setText(track);
+
+        }
+
         Observable singleTrack = App.getLyricAPI().getText(artist, track);
         Observable singleInfo = App.getInfoAPI().searchArtist(artist);
 
@@ -95,15 +103,6 @@ public class InfoFragment extends Fragment {
         return iFragment;
     }
 
-    private void successfulLyric(MusicResponse res) {
-        if (res.getError() == null) {
-            viewTrackText.setText(res.getLyrics());
-        } else {
-            viewTrackText.setText(res.getError());
-        }
-        progressLoad.setVisibility(View.GONE);
-    }
-
     private void successfulLoad(FullInfo info) {
         InfoResponse infoResponse = info.getInfoResponse();
         MusicResponse musicResponse = info.getMusicResponse();
@@ -125,20 +124,29 @@ public class InfoFragment extends Fragment {
         }
 
         GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
+        GlideApp.with(this).load(artist.getArtistLogoUrl()).centerCrop().into(buttonWebSite);
 
         if (artist.getFacebookUrl() != null) {
             buttonFacebook.setOnClickListener(btn -> {
-                String url = artist.getFacebookUrl();
-                if (!url.startsWith("http://") && !url.startsWith("https://"))
-                    url = "http://" + url;
-
-                Intent facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 try {
+                    String url = UrlAdapter.adapt(artist.getFacebookUrl());
+                    Intent facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(facebookIntent);
                 } catch (Exception e){
                     App.logE(e.getMessage());
                 }
+            });
+        }
 
+        if (artist.getWebSiteUrl() != null) {
+            buttonWebSite.setOnClickListener(btn -> {
+                try {
+                    String url = UrlAdapter.adapt(artist.getWebSiteUrl());
+                    Intent webSiteIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(webSiteIntent);
+                } catch (Exception e) {
+                    App.logE(e.getMessage());
+                }
             });
         }
 
