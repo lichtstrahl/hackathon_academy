@@ -1,25 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ProgressBar
         android:id="@+id/progressLoad"
         android:layout_width="@dimen/progressBarSize"
         android:layout_height="@dimen/progressBarSize"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        tools:visibility="gone"/>
 
-    <ScrollView
-        android:id="@+id/srollText"
+
+    <android.support.v7.widget.CardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="@dimen/trackTextHeight"
         android:layout_below="@id/progressLoad"
-        android:layout_margin="@dimen/stdMargin">
-        <TextView
-            android:id="@+id/viewTrackText"
+        android:layout_margin="@dimen/stdMargin"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/backgroundText"
+        app:cardCornerRadius="20dp">
+        <ScrollView
+            android:id="@+id/srollText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+            android:layout_height="match_parent"
+            android:layout_below="@id/progressLoad"
+            android:layout_marginTop="@dimen/stdMargin"
+            android:layout_marginBottom="@dimen/stdMargin"
+            android:layout_marginStart="@dimen/bigMargin"
+            android:layout_marginEnd="@dimen/bigMargin">
+            <TextView
+                android:id="@+id/viewTrackText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/xText"/>
+        </ScrollView>
+    </android.support.v7.widget.CardView>
+
 
 </RelativeLayout>

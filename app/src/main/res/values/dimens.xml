@@ -5,6 +5,12 @@
     <dimen name="trackTextWidth">300dp</dimen>
     <dimen name="trackTextHeight">400dp</dimen>
     <dimen name="stdMargin">8dp</dimen>
+    <dimen name="bigMargin">15dp</dimen>
+
+    <dimen name="stdText">12sp</dimen>
+    <dimen name="bigText">16sp</dimen>
+    <dimen name="xText">20sp</dimen>
+    <dimen name="xxText">24sp</dimen>
 
 
 </resources>
