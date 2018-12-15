@@ -76,7 +76,16 @@ public class InfoFragment extends Fragment {
             viewTrackName.setText(track);
         }
 
-        if (savedInstanceState == null) {
+        // Если поворот экрана
+        if (savedInstanceState != null) {
+            artistDTO = (ArtistDTO)savedInstanceState.getSerializable(SAVE_ARTIST);
+            textTrack = savedInstanceState.getString(SAVE_TEXT);
+            viewTrackText.setText(textTrack);
+            bindArtist(artistDTO);
+        }
+
+        // Даже если это поворот экрана, возможно загрузка не была завершена
+        if (savedInstanceState == null || artistDTO == null) {
             loadDialog = builder.create();
             loadDialog.show();
 
@@ -89,11 +98,6 @@ public class InfoFragment extends Fragment {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(loadObserver);
-        } else {
-            artistDTO = (ArtistDTO)savedInstanceState.getSerializable(SAVE_ARTIST);
-            textTrack = savedInstanceState.getString(SAVE_TEXT);
-            viewTrackText.setText(textTrack);
-            bindArtist(artistDTO);
         }
 
 
