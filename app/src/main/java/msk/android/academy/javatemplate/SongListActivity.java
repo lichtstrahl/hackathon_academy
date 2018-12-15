@@ -78,6 +78,7 @@ public class SongListActivity extends AppCompatActivity {
             int Artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int albumId = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
             do {
                 int SongID = cursor.getInt(id);
@@ -85,8 +86,10 @@ public class SongListActivity extends AppCompatActivity {
                 String SongTitle = cursor.getString(Title);
                 String SongArtist = cursor.getString(Artist);
                 int SongDuration = cursor.getInt(duration);
+                long songAlbum = cursor.getLong(albumId);
 
-                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID));
+
+                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum));
 
             } while (cursor.moveToNext());
         }

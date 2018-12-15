@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.adapter;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,7 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -39,6 +43,15 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         viewHolder.durationTextView.setText(songsList.get(position).getDuration());
         viewHolder.songId = songsList.get(position).getAudioResourceId();
         viewHolder.position = position;
+
+        String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),songsList.get(position).getCover()));
+
+        Glide.with(context)
+                .asBitmap()
+                .apply()
+                .load(albumArtUri)
+                .into(viewHolder.image);
     }
 
     @Override
@@ -50,6 +63,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         private TextView songTextView;
         private TextView artistTextView;
         private TextView durationTextView;
+        private ImageView image;
         private long songId;
         private int position;
 
@@ -59,6 +73,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             songTextView = view.findViewById(R.id.song);
             artistTextView = view.findViewById(R.id.artist);
             durationTextView = view.findViewById(R.id.duration);
+            image = view.findViewById(R.id.primary_action);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -7,12 +7,14 @@ public class Song implements Serializable {
     private String title;
     private long audioResourceId;
     private String duration;
+    private long cover;
 
-    public Song(String title, String artist, String duration, long audioResourceId) {
+    public Song(String title, String artist, String duration, long audioResourceId, long cover) {
         this.artist = artist;
         this.title = title;
         this.duration = duration;
         this.audioResourceId = audioResourceId;
+        this.cover = cover;
     }
 
     public String getArtist() {
@@ -29,5 +31,9 @@ public class Song implements Serializable {
 
     public long getAudioResourceId() {
         return audioResourceId;
+    }
+
+    public long getCover() {
+        return cover;
     }
 }
