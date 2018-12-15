@@ -20,6 +20,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+
+        
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build();
