@@ -1,14 +1,12 @@
 package msk.android.academy.javatemplate.model;
 
-import android.net.Uri;
-
 public class Song {
     private String artist;
     private String title;
-    private Uri audioResourceId;
+    private long audioResourceId;
     private String duration;
 
-    public Song(String title, String artist, String duration, Uri audioResourceId) {
+    public Song(String title, String artist, String duration, long audioResourceId) {
         this.artist = artist;
         this.title = title;
         this.duration = duration;
@@ -27,7 +25,7 @@ public class Song {
         return duration;
     }
 
-    public Uri getAudioResourceId() {
+    public long getAudioResourceId() {
         return audioResourceId;
     }
 }

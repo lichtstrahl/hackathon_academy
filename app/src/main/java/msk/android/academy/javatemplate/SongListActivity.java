@@ -1,10 +1,16 @@
 package msk.android.academy.javatemplate;
 
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,13 +81,12 @@ public class SongListActivity extends AppCompatActivity {
 
             do {
                 int SongID = cursor.getInt(id);
-                Uri finalSuccessfulUri = Uri.withAppendedPath(uri, "" + SongID);
 
                 String SongTitle = cursor.getString(Title);
                 String SongArtist = cursor.getString(Artist);
                 int SongDuration = cursor.getInt(duration);
 
-                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), finalSuccessfulUri));
+                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID));
 
             } while (cursor.moveToNext());
         }
