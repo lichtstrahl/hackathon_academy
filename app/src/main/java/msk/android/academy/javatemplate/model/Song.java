@@ -1,6 +1,8 @@
 package msk.android.academy.javatemplate.model;
 
-public class Song {
+import java.io.Serializable;
+
+public class Song implements Serializable {
     private String artist;
     private String title;
     private long audioResourceId;

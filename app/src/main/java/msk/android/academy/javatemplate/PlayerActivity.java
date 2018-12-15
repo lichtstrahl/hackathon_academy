@@ -51,11 +51,11 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
-    public static void start(Activity activity, ArrayList<Song> songs, int currentPos){
+    public static void start(Context activity, List<Song> songs, int currentPos){
         Intent startIntent = new Intent(activity, PlayerActivity.class);
 
         startIntent.putExtra(KEY_CURPOS, currentPos);
-        startIntent.putExtra(KEY_LIST, songs);
+        startIntent.putExtra(KEY_LIST, (ArrayList<Song>)songs);
         activity.startActivity(startIntent);
     }
 

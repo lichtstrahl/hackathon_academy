@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import msk.android.academy.javatemplate.PlayerActivity;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.model.Song;
 
@@ -36,7 +37,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         viewHolder.songTextView.setText(songsList.get(position).getTitle());
         viewHolder.artistTextView.setText(songsList.get(position).getArtist());
         viewHolder.durationTextView.setText(songsList.get(position).getDuration());
-        //viewHolder.songId = songsList.get(position).getAudioResourceId();
+        viewHolder.songId = songsList.get(position).getAudioResourceId();
+        viewHolder.position = position;
     }
 
     @Override
@@ -49,6 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         private TextView artistTextView;
         private TextView durationTextView;
         private long songId;
+        private int position;
 
         public ViewHolder(View view) {
             super(view);
@@ -60,11 +63,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Intent intent = new Intent(view.getContext(), SongCardActivity.class);
-//                    intent.putExtra("title", songTextView.getText().toString());
-//                    intent.putExtra("author", artistTextView.getText().toString());
-//                    intent.putExtra("songId", songId);
-//                    context.startActivity(intent);
+                    PlayerActivity.start(context, songsList, position);
                 }
             });
         }
