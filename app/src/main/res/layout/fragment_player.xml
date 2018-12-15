@@ -29,7 +29,7 @@
             android:id="@+id/btn_startstop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Старт"
+            android:text="Старт/Стоп"
             android:layout_weight="1"/>
 
         <Button

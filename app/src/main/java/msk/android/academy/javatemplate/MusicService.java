@@ -20,6 +20,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Random;
 
+import msk.android.academy.javatemplate.model.Song;
+
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener  {
@@ -29,7 +31,7 @@ public class MusicService extends Service implements
     //media player
     private MediaPlayer player;
     //song list
-    //private ArrayList<Song> songs;
+    private ArrayList<Song> songs;
     //current position
     private int songPosn;
     //binder
@@ -67,9 +69,9 @@ public class MusicService extends Service implements
     }
 
     //pass song list
-    //public void setList(ArrayList<Song> theSongs){
-    //    songs=theSongs;
-    //}
+    public void setList(ArrayList<Song> theSongs){
+        songs=theSongs;
+    }
 
     //binder
     public class MusicBinder extends Binder {
