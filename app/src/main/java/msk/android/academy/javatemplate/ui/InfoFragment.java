@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -47,6 +48,7 @@ public class InfoFragment extends Fragment {
     private TextView viewTrackName;
     private ImageButton buttonFacebook;
     private ImageButton buttonWebSite;
+    private Button buttonReconnect;
     private ProgressBar progressLoadInfo;
     private ProgressBar progressLoadText;
     private NetworkObserver<LyricResponse> loadLyricObserver;
@@ -67,10 +69,12 @@ public class InfoFragment extends Fragment {
         viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
         buttonWebSite = view.findViewById(R.id.buttonWebSite);
+        buttonReconnect = view.findViewById(R.id.buttonReconnect);
         progressLoadInfo = view.findViewById(R.id.progressInfo);
         progressLoadText = view.findViewById(R.id.progressText);
         loadLyricObserver = new NetworkObserver<>(this::successfulLoadText, this::errorLoadText);
         loadInfoObserver = new NetworkObserver<>(this::successfulLoadInfo, this::errorLoadInfo);
+        buttonReconnect.setOnClickListener(this::clickReconnect);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -92,19 +96,29 @@ public class InfoFragment extends Fragment {
 
         // Даже если это поворот экрана, возможно загрузка не была завершена
         if (savedInstanceState == null || artistDTO == null) {
-            App.getLyricAPI().getText(artist, track)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(loadLyricObserver);
-            App.getInfoAPI().searchArtist(artist)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(loadInfoObserver);
-            progressLoadText.setVisibility(View.VISIBLE);
-            progressLoadInfo.setVisibility(View.VISIBLE);
+            startLoad();
         }
 
         return view;
+    }
+
+
+    private void clickReconnect(View v) {
+        v.setVisibility(View.GONE);
+        startLoad();
+    }
+
+    private void startLoad() {
+        App.getLyricAPI().getText(artist, track)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadLyricObserver);
+        App.getInfoAPI().searchArtist(artist)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadInfoObserver);
+        progressLoadText.setVisibility(View.VISIBLE);
+        progressLoadInfo.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -165,12 +179,33 @@ public class InfoFragment extends Fragment {
 
     // HttpException, UnkownHostException
     private void errorLoadInfo(Throwable t) {
+        // Нет интернета
+        if (t instanceof UnknownHostException) {
+            buttonReconnect.setVisibility(View.VISIBLE);
+        }
 
+        // Ошибка при запросе
+        if (t instanceof HttpException) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
+        }
+
+
+        progressLoadInfo.setVisibility(View.GONE);
         App.logE(t.getMessage());
     }
 
     private void errorLoadText(Throwable t) {
+        // Нет интернета
+        if (t instanceof UnknownHostException) {
+            buttonReconnect.setVisibility(View.VISIBLE);
+        }
 
+        // Ошибка при запросе
+        if (t instanceof HttpException) {
+            viewTrackText.setText(R.string.notFoundTextForTrack);
+        }
+
+        progressLoadText.setVisibility(View.GONE);
         App.logE(t.getMessage());
     }
 

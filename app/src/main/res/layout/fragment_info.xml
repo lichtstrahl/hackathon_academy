@@ -15,6 +15,16 @@
             android:layout_height="@dimen/progressBarSize"
             android:layout_centerHorizontal="true"/>
 
+        <Button
+            android:id="@+id/buttonReconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/reconnect"
+            android:textSize="@dimen/smallText"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
         <TextView
             android:id="@+id/viewTrackName"
             android:layout_width="wrap_content"

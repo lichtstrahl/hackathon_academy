@@ -7,6 +7,7 @@
     <dimen name="stdMargin">8dp</dimen>
     <dimen name="bigMargin">15dp</dimen>
 
+    <dimen name="smallText">10sp</dimen>
     <dimen name="stdText">12sp</dimen>
     <dimen name="bigText">16sp</dimen>
     <dimen name="xText">20sp</dimen>
