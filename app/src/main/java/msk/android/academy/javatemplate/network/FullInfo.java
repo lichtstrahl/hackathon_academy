@@ -1,5 +1,8 @@
 package msk.android.academy.javatemplate.network;
 
+import msk.android.academy.javatemplate.network.dto.InfoResponse;
+import msk.android.academy.javatemplate.network.dto.MusicResponse;
+
 public class FullInfo {
     private MusicResponse musicResponse;
     private InfoResponse infoResponse;

@@ -11,13 +11,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.network.FullInfo;
-import msk.android.academy.javatemplate.network.InfoResponse;
-import msk.android.academy.javatemplate.network.MusicResponse;
+import msk.android.academy.javatemplate.network.dto.ArtistDTO;
+import msk.android.academy.javatemplate.network.dto.InfoResponse;
+import msk.android.academy.javatemplate.network.dto.MusicResponse;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 
 public class InfoFragment extends Fragment {
@@ -27,6 +27,8 @@ public class InfoFragment extends Fragment {
     private String track;
     private ProgressBar progressLoad;
     private TextView viewTrackText;
+    private TextView viewStyle;
+    private TextView viewGenre;
     private NetworkObserver<FullInfo> loadObserver;
 
     @Nullable
@@ -42,6 +44,8 @@ public class InfoFragment extends Fragment {
 
         progressLoad = view.findViewById(R.id.progressLoad);
         viewTrackText = view.findViewById(R.id.viewTrackText);
+        viewStyle = view.findViewById(R.id.viewStyle);
+        viewGenre = view.findViewById(R.id.viewGenre);
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
         return view;
     }
@@ -93,6 +97,10 @@ public class InfoFragment extends Fragment {
         } else {
             viewTrackText.setText(musicResponse.getError());
         }
+
+        ArtistDTO artist = infoResponse.getArtists().get(0);
+        viewStyle.setText(artist.getStyle());
+        viewGenre.setText(artist.getGenre());
 
         progressLoad.setVisibility(View.GONE);
     }

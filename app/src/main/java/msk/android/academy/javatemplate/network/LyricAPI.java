@@ -1,7 +1,7 @@
 package msk.android.academy.javatemplate.network;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
+import msk.android.academy.javatemplate.network.dto.MusicResponse;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
