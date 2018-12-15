@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/two_line_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:minHeight="72dp"
+    android:paddingLeft="?listPreferredItemPaddingLeft"
+    android:paddingStart="?listPreferredItemPaddingLeft">
+
+    <ImageView
+        android:id="@+id/primary_action"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_launcher_background" />
+
+    <LinearLayout
+        android:id="@+id/lines_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toEndOf="@+id/primary_action"
+        android:layout_toRightOf="@+id/primary_action"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/song"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+            android:singleLine="false"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="First Line " />
+
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textSize="14sp"
+            tools:text="Second Line" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/artist"
+            android:layout_marginTop="12dp"
+            android:background="@color/colorAccent" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:text="3 20" />
+
+</RelativeLayout>
