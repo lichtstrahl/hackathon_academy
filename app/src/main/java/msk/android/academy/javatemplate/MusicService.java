@@ -80,8 +80,6 @@ public class MusicService extends Service implements
         EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name));
     }
 
-
-
     public void initMusicPlayer() {
         //set player properties
         //player.setWakeMode(getApplicationContext(),
@@ -200,7 +198,7 @@ public class MusicService extends Service implements
         return player.getDuration();
     }
 
-    public boolean isPng() {
+    public boolean isPlaying() {
         return player.isPlaying();
     }
 

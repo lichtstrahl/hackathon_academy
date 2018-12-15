@@ -30,6 +30,7 @@ import msk.android.academy.javatemplate.model.Song;
 
 public class PlayerActivity extends AppCompatActivity {
 
+    public static boolean sStart = false;
     public static final String KEY_CURPOS = "KEY_CURPOS";
     public static final String KEY_LIST = "KEY_LIST";
     //service
@@ -64,8 +65,11 @@ public class PlayerActivity extends AppCompatActivity {
             //pass list
             musicSrv.setList(songs);
             musicSrv.setSong(curPos);
-            musicSrv.playSong();
-            playing = true;
+            if (PlayerActivity.sStart) {
+                musicSrv.playSong();
+                PlayerActivity.sStart = false;
+            }
+            playing = musicSrv.isPlaying();
             musicBound = true;
         }
 
@@ -77,6 +81,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     public static void start(Context activity, List<Song> songs, int currentPos) {
         Intent startIntent = new Intent(activity, PlayerActivity.class);
+        PlayerActivity.sStart = true;
 
         startIntent.putExtra(KEY_CURPOS, currentPos);
         startIntent.putExtra(KEY_LIST, (ArrayList<Song>) songs);
@@ -193,4 +198,6 @@ public class PlayerActivity extends AppCompatActivity {
             return String.format("%02d:%02d:%02d / %02d:%02d:%02d", cHours, cMinutes, cSeconds, dHours, dMinutes, dSeconds);
         }
     }
+
+
 }
