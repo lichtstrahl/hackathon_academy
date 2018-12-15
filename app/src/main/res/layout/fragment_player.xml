@@ -36,14 +36,14 @@
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Следующая"
+            android:text="Предыдушая"
             android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btn_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Предыдушая"
+            android:text="Следующая"
             android:layout_weight="1"/>
 
     </LinearLayout>

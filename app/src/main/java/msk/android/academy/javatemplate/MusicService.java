@@ -17,47 +17,72 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Random;
+import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener  {
+        MediaPlayer.OnCompletionListener {
 
     private static final String CHANNEL_ID = "CHANNEL_MUSIC";
+
+    private Disposable mTimerDisposable;
 
     //media player
     private MediaPlayer player;
     //song list
-    private ArrayList<Song> songs;
+    private List<Song> songs;
     //current position
     private int songPosn;
     //binder
     private final IBinder musicBind = new MusicBinder();
     //title of current song
-    private String songTitle="";
+    private String songTitle = "";
     //notification id
-    private static final int NOTIFY_ID=1;
+    private static final int NOTIFY_ID = 1;
     //shuffle flag and random
-    private boolean shuffle=false;
+    private boolean shuffle = false;
     private Random rand;
+    private String name;
 
-    public void onCreate(){
+    private int duration = 0;
+
+    public void onCreate() {
         //create the service
         super.onCreate();
         //initialize position
-        songPosn=0;
+        songPosn = 0;
         //random
-        rand=new Random();
+        rand = new Random();
         //create player
         player = new MediaPlayer();
         //initialize
         initMusicPlayer();
+
+        mTimerDisposable = Observable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(MusicService.this::onTimerUpdate);
     }
 
-    public void initMusicPlayer(){
+    private void onTimerUpdate(long totalSeconds) {
+        EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name));
+    }
+
+
+
+    public void initMusicPlayer() {
         //set player properties
         //player.setWakeMode(getApplicationContext(),
         //		PowerManager.PARTIAL_WAKE_LOCK);
@@ -69,8 +94,8 @@ public class MusicService extends Service implements
     }
 
     //pass song list
-    public void setList(ArrayList<Song> theSongs){
-        songs=theSongs;
+    public void setList(List<Song> theSongs) {
+        songs = theSongs;
     }
 
     //binder
@@ -88,45 +113,47 @@ public class MusicService extends Service implements
 
     //release resources when unbind
     @Override
-    public boolean onUnbind(Intent intent){
+    public boolean onUnbind(Intent intent) {
         player.stop();
         player.release();
         return false;
     }
 
     //play a song
-    public void playSong(){
+    public void playSong() {
         //play
         player.reset();
         //get song
-        //Song playSong = songs.get(songPosn);
+        Song playSong = songs.get(songPosn);
         //get title
-        songTitle="Some title";//playSong.getTitle();""
+        songTitle = playSong.getTitle();
         //get id
-        long currSong = 15761;/*playSong.getID()*/;
+        long currSong = playSong.getAudioResourceId();
+
+        name = playSong.getArtist() + " - " + playSong.getTitle();
+
         //set uri
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 currSong);
         //set the data source
-        try{
+        try {
             player.setDataSource(getApplicationContext(), trackUri);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
         player.prepareAsync();
     }
 
     //set the song
-    public void setSong(int songIndex){
-        songPosn=songIndex;
+    public void setSong(int songIndex) {
+        songPosn = songIndex;
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         //check if playback has reached the end of a track
-        if(player.getCurrentPosition()>0){
+        if (player.getCurrentPosition() > 0) {
             mp.reset();
             playNext();
         }
@@ -141,10 +168,11 @@ public class MusicService extends Service implements
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        duration = player.getDuration();
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, MainActivity.class);
+        Intent notIntent = new Intent(this, SongListActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -164,50 +192,49 @@ public class MusicService extends Service implements
     }
 
     //playback methods
-    public int getPosn(){
+    public int getPosn() {
         return player.getCurrentPosition();
     }
 
-    public int getDur(){
+    public int getDur() {
         return player.getDuration();
     }
 
-    public boolean isPng(){
+    public boolean isPng() {
         return player.isPlaying();
     }
 
-    public void pausePlayer(){
+    public void pausePlayer() {
         player.pause();
     }
 
-    public void seek(int posn){
+    public void seek(int posn) {
         player.seekTo(posn);
     }
 
-    public void go(){
+    public void go() {
         player.start();
     }
 
     //skip to previous track
-    public void playPrev(){
-        /*songPosn--;
-        if(songPosn<0) songPosn=songs.size()-1;*/
+    public void playPrev() {
+        songPosn--;
+        if (songPosn < 0) songPosn = songs.size() - 1;
         playSong();
     }
 
     //skip to next
-    public void playNext(){
-        /*if(shuffle){
+    public void playNext() {
+        if (shuffle) {
             int newSong = songPosn;
-            while(newSong==songPosn){
-                newSong=rand.nextInt(songs.size());
+            while (newSong == songPosn) {
+                newSong = rand.nextInt(songs.size());
             }
-            songPosn=newSong;
-        }
-        else{
+            songPosn = newSong;
+        } else {
             songPosn++;
-            if(songPosn>=songs.size()) songPosn=0;
-        }*/
+            if (songPosn >= songs.size()) songPosn = 0;
+        }
         playSong();
     }
 
@@ -217,9 +244,9 @@ public class MusicService extends Service implements
     }
 
     //toggle shuffle
-    public void setShuffle(){
-        if(shuffle) shuffle=false;
-        else shuffle=true;
+    public void setShuffle() {
+        if (shuffle) shuffle = false;
+        else shuffle = true;
     }
 
     private void createNotificationChannel() {
