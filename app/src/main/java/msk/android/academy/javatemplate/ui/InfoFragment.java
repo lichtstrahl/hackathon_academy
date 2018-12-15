@@ -12,14 +12,14 @@ import android.widget.Button;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
-import msk.android.academy.javatemplate.network.EmptyDTO;
+import msk.android.academy.javatemplate.network.MusicResponse;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
     private static final String INTENT_TRACK = "args:track";
     private Button buttonNetwork;
-    private NetworkObserver<EmptyDTO> lyricObserver;
+    private NetworkObserver<MusicResponse> lyricObserver;
     private String artist;
     private String track;
 
@@ -43,6 +43,7 @@ public class InfoFragment extends Fragment {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(lyricObserver);
         });
+
         return view;
     }
 
@@ -55,8 +56,8 @@ public class InfoFragment extends Fragment {
         return iFragment;
     }
 
-    private void successfulLyric(EmptyDTO dto) {
-        App.logI(dto.getClass().getName());
+    private void successfulLyric(MusicResponse res) {
+        App.logI(res.getLyrics());
     }
 
     private void errorNetwork(Throwable t) {
