@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupFragment() {
-        InfoFragment f = InfoFragment.getInstance("Linkin Park", "Numb");
+        InfoFragment f = InfoFragment.getInstance("Rammstein", "assd");
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.layoutBG, f)

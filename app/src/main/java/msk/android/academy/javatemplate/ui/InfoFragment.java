@@ -62,10 +62,8 @@ public class InfoFragment extends Fragment {
         viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
         buttonWebSite = view.findViewById(R.id.buttonWebSite);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
-                .setView(R.layout.layout_dialog_loading)
-                .setCancelable(false);
-        loadDialog = builder.create();
+
+        loadDialog = createLoadDialog(R.layout.layout_dialog_loading);
 
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
 
@@ -108,6 +106,10 @@ public class InfoFragment extends Fragment {
         return view;
     }
 
+    private AlertDialog createLoadDialog(int res) {
+        return new AlertDialog.Builder(this.getContext()).setView(res).setCancelable(false).create();
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -148,11 +150,14 @@ public class InfoFragment extends Fragment {
     }
 
     private void errorNetwork(Throwable t) {
-        loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
-        ((TextView)loadDialog.findViewById(R.id.dialogText)).setText(R.string.errorNetworkLoading);
+        loadDialog.dismiss();
+        loadDialog = createLoadDialog(R.layout.layout_dialog_reconnect);
+        loadDialog.show();
         ImageButton buttonReconnect = loadDialog.findViewById(R.id.buttonReconnect);
         buttonReconnect.setVisibility(View.VISIBLE);
         buttonReconnect.setOnClickListener((btn) -> {
+            loadDialog.dismiss();
+            loadDialog = createLoadDialog(R.layout.layout_dialog_loading);
             loadDialog.show();
             Observable singleTrack = App.getLyricAPI().getText(artist, track);
             Observable singleInfo = App.getInfoAPI().searchArtist(artist);
