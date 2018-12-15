@@ -7,8 +7,8 @@
     android:background="?selectableItemBackground"
     android:clickable="true"
     android:minHeight="72dp"
-    android:paddingLeft="?listPreferredItemPaddingLeft"
-    android:paddingStart="?listPreferredItemPaddingLeft">
+    android:paddingStart="?listPreferredItemPaddingLeft"
+    android:paddingLeft="?listPreferredItemPaddingLeft">
 
     <ImageView
         android:id="@+id/primary_action"
@@ -61,8 +61,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginTop="18dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="3 20" />
 

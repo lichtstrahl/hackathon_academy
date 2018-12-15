@@ -1,6 +1,7 @@
 package msk.android.academy.javatemplate.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +48,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         private TextView songTextView;
         private TextView artistTextView;
         private TextView durationTextView;
-        private Uri songId;
+        private long songId;
 
         public ViewHolder(View view) {
             super(view);
@@ -59,7 +60,11 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+//                    Intent intent = new Intent(view.getContext(), SongCardActivity.class);
+//                    intent.putExtra("title", songTextView.getText().toString());
+//                    intent.putExtra("author", artistTextView.getText().toString());
+//                    intent.putExtra("songId", songId);
+//                    context.startActivity(intent);
                 }
             });
         }
