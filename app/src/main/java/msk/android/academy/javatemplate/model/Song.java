@@ -1,22 +1,16 @@
 package msk.android.academy.javatemplate.model;
 
-import android.net.Uri;
-
-import java.io.Serializable;
-
-public class Song implements Serializable{
+public class Song {
     private String artist;
     private String title;
-    //private Uri audioResourceId;
-    private long id;
+    private long audioResourceId;
     private String duration;
 
-    public Song(String title, String artist, String duration, long id/*Uri audioResourceId*/) {
+    public Song(String title, String artist, String duration, long audioResourceId) {
         this.artist = artist;
         this.title = title;
         this.duration = duration;
-        this.id = id;
-        //this.audioResourceId = audioResourceId;
+        this.audioResourceId = audioResourceId;
     }
 
     public String getArtist() {
@@ -31,11 +25,7 @@ public class Song implements Serializable{
         return duration;
     }
 
-    //public Uri getAudioResourceId() {
-    //    return audioResourceId;
-    //}
-
-    public long getId(){
-        return id;
+    public long getAudioResourceId() {
+        return audioResourceId;
     }
 }
