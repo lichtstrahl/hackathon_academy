@@ -1,8 +1,7 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.icu.text.IDNA;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 
 import butterknife.BindView;
@@ -19,9 +18,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setupFragment();
+        if (savedInstanceState == null) {
+            setupFragment();
+        }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
 
     public void setupFragment() {
         InfoFragment f = InfoFragment.getInstance("Linkin Park", "Numb");

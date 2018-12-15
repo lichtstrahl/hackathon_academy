@@ -2,7 +2,9 @@ package msk.android.academy.javatemplate.network.dto;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ArtistDTO {
+import java.io.Serializable;
+
+public class ArtistDTO implements Serializable {
     @SerializedName("strArtist")
     String artistName;
     @SerializedName("strStyle")

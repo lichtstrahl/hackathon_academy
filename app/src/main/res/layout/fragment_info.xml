@@ -9,18 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/progressLoad"
-            android:layout_width="@dimen/progressBarSize"
-            android:layout_height="@dimen/progressBarSize"
-            android:layout_centerHorizontal="true"
-            tools:visibility="gone"/>
         <TextView
             android:id="@+id/viewTrackName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/progressLoad"
+            android:layout_margin="@dimen/stdMargin"
             android:maxLines="1" />
 
         <android.support.v7.widget.CardView
@@ -38,7 +32,6 @@
                 android:id="@+id/srollText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/progressLoad"
                 android:layout_marginTop="@dimen/stdMargin"
                 android:layout_marginBottom="@dimen/stdMargin"
                 android:layout_marginStart="@dimen/bigMargin"

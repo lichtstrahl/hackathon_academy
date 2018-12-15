@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -31,10 +31,11 @@ import msk.android.academy.javatemplate.network.util.UrlAdapter;
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
     private static final String INTENT_TRACK = "args:track";
-    private static final String ruCountry = "RU";
+    private static final String SAVE_ARTIST = "save:artist";
+    private static final String SAVE_TEXT = "save:text";
+    private static final String RU_COUNTRY = "RU";
     private String artist;
     private String track;
-    private ProgressBar progressLoad;
     private TextView viewTrackText;
     private TextView viewStyle;
     private TextView viewGenre;
@@ -44,13 +45,15 @@ public class InfoFragment extends Fragment {
     private ImageButton buttonFacebook;
     private ImageButton buttonWebSite;
     private NetworkObserver<FullInfo> loadObserver;
+    private AlertDialog loadDialog;
+    private ArtistDTO artistDTO;
+    private String textTrack;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_info, container, false);
 
-        progressLoad = view.findViewById(R.id.progressLoad);
         viewTrackText = view.findViewById(R.id.viewTrackText);
         viewStyle = view.findViewById(R.id.viewStyle);
         viewGenre = view.findViewById(R.id.viewGenre);
@@ -59,38 +62,56 @@ public class InfoFragment extends Fragment {
         viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
         buttonWebSite = view.findViewById(R.id.buttonWebSite);
-
-
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
-        return view;
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
+                .setView(R.layout.layout_dialog_loading)
+                .setCancelable(false);
+
         Bundle bundle = getArguments();
         if (bundle != null) {
             artist = bundle.getString(INTENT_ARTIST);
             track = bundle.getString(INTENT_TRACK);
             getActivity().setTitle(artist);
             viewTrackName.setText(track);
-
         }
 
-        Observable singleTrack = App.getLyricAPI().getText(artist, track);
-        Observable singleInfo = App.getInfoAPI().searchArtist(artist);
+        if (savedInstanceState == null) {
+            loadDialog = builder.create();
+            loadDialog.show();
 
-        Observable.combineLatest(
-                singleTrack, singleInfo,
-                (MusicResponse trackText, InfoResponse trackInfo) -> new FullInfo(trackText, trackInfo))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadObserver);
+            Observable singleTrack = App.getLyricAPI().getText(artist, track);
+            Observable singleInfo = App.getInfoAPI().searchArtist(artist);
+
+            Observable.combineLatest(
+                    singleTrack, singleInfo,
+                    (MusicResponse trackText, InfoResponse trackInfo) -> new FullInfo(trackText, trackInfo))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadObserver);
+        } else {
+            artistDTO = (ArtistDTO)savedInstanceState.getSerializable(SAVE_ARTIST);
+            textTrack = savedInstanceState.getString(SAVE_TEXT);
+            viewTrackText.setText(textTrack);
+            bindArtist(artistDTO);
+        }
+
+
+
+//        App.logI("Fragment created. Bundle: " + savedInstanceState);
+        return view;
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(SAVE_ARTIST, artistDTO);
+        outState.putString(SAVE_TEXT, textTrack);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         loadObserver.unsubscribe();
     }
 
@@ -108,16 +129,30 @@ public class InfoFragment extends Fragment {
         MusicResponse musicResponse = info.getMusicResponse();
 
         if (musicResponse.getError() == null) {
-            viewTrackText.setText(musicResponse.getLyrics());
+            textTrack = musicResponse.getLyrics();
+            viewTrackText.setText(textTrack);
         } else {
+            textTrack = "";
             viewTrackText.setText(musicResponse.getError());
         }
 
-        ArtistDTO artist = infoResponse.getArtists().get(0);
+        artistDTO = infoResponse.getArtists().get(0);
+        bindArtist(artistDTO);
+        loadDialog.dismiss();
+    }
+
+    private void errorNetwork(Throwable t) {
+        loadDialog.dismiss();
+        App.logE(t.getMessage());
+    }
+
+    private void bindArtist(@Nullable ArtistDTO artist) {
+        if (artist == null)
+            return;
         viewStyle.setText(artist.getStyle());
         viewGenre.setText(artist.getGenre());
 
-        if (Locale.getDefault().getCountry().equals(ruCountry) && artist.getBiographyRu() != null) {
+        if (Locale.getDefault().getCountry().equals(RU_COUNTRY) && artist.getBiographyRu() != null) {
             viewBiography.setText(artist.getBiographyRu());
         } else {
             viewBiography.setText(artist.getBiographyEn());
@@ -149,12 +184,5 @@ public class InfoFragment extends Fragment {
                 }
             });
         }
-
-        progressLoad.setVisibility(View.GONE);
-    }
-
-    private void errorNetwork(Throwable t) {
-        progressLoad.setVisibility(View.GONE);
-        App.logE(t.getMessage());
     }
 }
