@@ -62,11 +62,14 @@ public class InfoFragment extends Fragment {
         viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
         buttonWebSite = view.findViewById(R.id.buttonWebSite);
-        loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
                 .setView(R.layout.layout_dialog_loading)
                 .setCancelable(false);
+        loadDialog = builder.create();
+
+        loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
+
+
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -86,7 +89,6 @@ public class InfoFragment extends Fragment {
 
         // Даже если это поворот экрана, возможно загрузка не была завершена
         if (savedInstanceState == null || artistDTO == null) {
-            loadDialog = builder.create();
             loadDialog.show();
 
             Observable singleTrack = App.getLyricAPI().getText(artist, track);
@@ -146,7 +148,22 @@ public class InfoFragment extends Fragment {
     }
 
     private void errorNetwork(Throwable t) {
-        loadDialog.dismiss();
+        loadDialog.findViewById(R.id.progress).setVisibility(View.GONE);
+        ((TextView)loadDialog.findViewById(R.id.dialogText)).setText(R.string.errorNetworkLoading);
+        ImageButton buttonReconnect = loadDialog.findViewById(R.id.buttonReconnect);
+        buttonReconnect.setVisibility(View.VISIBLE);
+        buttonReconnect.setOnClickListener((btn) -> {
+            loadDialog.show();
+            Observable singleTrack = App.getLyricAPI().getText(artist, track);
+            Observable singleInfo = App.getInfoAPI().searchArtist(artist);
+
+            Observable.combineLatest(
+                    singleTrack, singleInfo,
+                    (MusicResponse trackText, InfoResponse trackInfo) -> new FullInfo(trackText, trackInfo))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadObserver);
+        });
         App.logE(t.getMessage());
     }
 

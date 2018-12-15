@@ -3,4 +3,5 @@
     <string name="artistArt">Изображение артиста</string>
     <string name="reconnect">Переподключиться</string>
     <string name="loading">Загрузка. Пожалуйста подождите ...</string>
+    <string name="errorNetworkLoading">Не удалось загрузить данные. Попробовать снова?</string>
 </resources>

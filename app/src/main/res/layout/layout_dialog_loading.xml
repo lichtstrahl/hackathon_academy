@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/stdMargin"
         android:visibility="visible" />
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/dialogText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/progress"
@@ -28,9 +28,9 @@
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_reconnect"
         android:contentDescription="@string/reconnect"
-        android:layout_alignStart="@id/text"
-        android:layout_alignEnd="@id/text"
-        android:layout_below="@id/text"
+        android:layout_alignStart="@id/dialogText"
+        android:layout_alignEnd="@id/dialogText"
+        android:layout_below="@id/dialogText"
         android:visibility="gone" />
 
 </RelativeLayout>
