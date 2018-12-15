@@ -9,6 +9,10 @@ public class ArtistDTO {
     String style;
     @SerializedName("strGenre")
     String genre;
+    @SerializedName("strBiographyRU")
+    String biographyRu;
+    @SerializedName("strBiographyEN")
+    String biographyEn;
 
     public String getArtistName() {
         return artistName;
@@ -20,5 +24,13 @@ public class ArtistDTO {
 
     public String getGenre() {
         return genre;
+    }
+
+    public String getBiographyRu() {
+        return biographyRu;
+    }
+
+    public String getBiographyEn() {
+        return biographyEn;
     }
 }

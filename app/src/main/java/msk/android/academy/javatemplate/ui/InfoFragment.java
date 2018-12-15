@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -23,12 +25,14 @@ import msk.android.academy.javatemplate.network.util.NetworkObserver;
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
     private static final String INTENT_TRACK = "args:track";
+    private static final String ruCountry = "RU";
     private String artist;
     private String track;
     private ProgressBar progressLoad;
     private TextView viewTrackText;
     private TextView viewStyle;
     private TextView viewGenre;
+    private TextView viewBiography;
     private NetworkObserver<FullInfo> loadObserver;
 
     @Nullable
@@ -46,6 +50,8 @@ public class InfoFragment extends Fragment {
         viewTrackText = view.findViewById(R.id.viewTrackText);
         viewStyle = view.findViewById(R.id.viewStyle);
         viewGenre = view.findViewById(R.id.viewGenre);
+        viewBiography = view.findViewById(R.id.viewBiography);
+
         loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
         return view;
     }
@@ -101,6 +107,15 @@ public class InfoFragment extends Fragment {
         ArtistDTO artist = infoResponse.getArtists().get(0);
         viewStyle.setText(artist.getStyle());
         viewGenre.setText(artist.getGenre());
+
+        if (Locale.getDefault().getCountry().equals(ruCountry) && artist.getBiographyRu() != null) {
+            viewBiography.setText(artist.getBiographyRu());
+        } else {
+            viewBiography.setText(artist.getBiographyEn());
+        }
+
+
+
 
         progressLoad.setVisibility(View.GONE);
     }
