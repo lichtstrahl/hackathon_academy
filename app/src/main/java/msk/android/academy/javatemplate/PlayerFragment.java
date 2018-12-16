@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -68,6 +71,7 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         //super.onCreate(savedInstanceState);
         //setContentView(R.layout.fragment_player);
         View view = inflater.inflate(R.layout.fragment_player, container, false);
@@ -207,5 +211,22 @@ public class PlayerFragment extends Fragment {
     public void onDetach() {
         listener = null;
         super.onDetach();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.info_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_info:
+                EventBus.getDefault().post(new DetailsEvent(artist, name));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
