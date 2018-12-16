@@ -4,7 +4,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
@@ -26,6 +25,7 @@ import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
+    private int count;
     private Context context;
     private List<Song> songsList;
 
@@ -53,6 +53,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
         Glide.with(context)
                 .asBitmap()
+                .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                 .load(albumArtUri)
                 .into(viewHolder.image);
     }
@@ -82,6 +83,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             durationTextView = view.findViewById(R.id.duration);
             image = view.findViewById(R.id.primary_action);
 
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
 
@@ -91,6 +93,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                     if (position != RecyclerView.NO_POSITION) {
                         EventBus.getDefault().post(new SongClickEvent(songsList, position));
                     }
+
+                    Song song = songsList.get(position);
+                    song.incrementCount();
+                    App.getFavoritesDB().songDao().update(song);
                 }
             });
         }

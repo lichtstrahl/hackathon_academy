@@ -1,16 +1,10 @@
 package msk.android.academy.javatemplate;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Build;
-import android.os.IBinder;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +30,6 @@ import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
-import msk.android.academy.javatemplate.ui.InfoFragment;
 
 public class PlayerFragment extends Fragment {
 
@@ -63,7 +56,6 @@ public class PlayerFragment extends Fragment {
     private PlayerFragmentListener listener;
 
     //private boolean playing = false;
-
 
 
 //    public static void start(Context activity, List<Song> songs, int currentPos) {
@@ -106,7 +98,7 @@ public class PlayerFragment extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser ) {
+                if (fromUser) {
                     //musicSrv.seek(progress);
                     EventBus.getDefault().post(new SeekEvent(progress));
                     //mediaPlayer.seekTo(progress);
@@ -153,11 +145,11 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (listener != null){
+        if (listener != null) {
             listener.startService();
         }
 
-        if (PlayerFragment.sStart){
+        if (PlayerFragment.sStart) {
             PlayerFragment.sStart = false;
             EventBus.getDefault().post(new PlaySongEvent());
         }

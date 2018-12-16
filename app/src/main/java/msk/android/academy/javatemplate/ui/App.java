@@ -7,6 +7,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 
 import msk.android.academy.javatemplate.BuildConfig;
+import msk.android.academy.javatemplate.bd.AppDatabase;
 import msk.android.academy.javatemplate.db.AppDatabase;
 import msk.android.academy.javatemplate.network.InfoAPI;
 import msk.android.academy.javatemplate.network.LyricAPI;
@@ -17,22 +18,29 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class App extends Application {
+
+    private static final String DATABASE_NAME = "alexDataBase";
     private static AppDatabase database;
     private static final String nameDB = "dbMusicInfo";
     private static LyricAPI lyricAPI;
     private static InfoAPI infoAPI;
+    private static AppDatabase favoritesDB;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
 
+        favoritesDB = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME)
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
         database = Room.databaseBuilder(this, AppDatabase.class, nameDB)
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
 
-        
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build();
@@ -78,5 +86,9 @@ public class App extends Application {
 
     public static void logW(String msg) {
         Log.w(BuildConfig.TAG_GLOBAL, msg);
+    }
+
+    public static AppDatabase getFavoritesDB() {
+        return favoritesDB;
     }
 }
