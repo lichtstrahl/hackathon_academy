@@ -3,7 +3,6 @@ package msk.android.academy.javatemplate.network.util;
 import android.support.annotation.Nullable;
 
 import io.reactivex.Observer;
-import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import msk.android.academy.javatemplate.ui.App;

@@ -1,6 +1,5 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,18 +15,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.net.UnknownHostException;
 import java.util.Locale;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
-import msk.android.academy.javatemplate.network.FullInfo;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.LyricResponse;
-import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 import msk.android.academy.javatemplate.network.util.UrlAdapter;
 import retrofit2.HttpException;
@@ -86,7 +85,7 @@ public class InfoFragment extends Fragment {
 
         // Если поворот экрана
         if (savedInstanceState != null) {
-            artistDTO = (ArtistDTO)savedInstanceState.getSerializable(SAVE_ARTIST);
+            artistDTO = (ArtistDTO) savedInstanceState.getSerializable(SAVE_ARTIST);
             textTrack = savedInstanceState.getString(SAVE_TEXT);
             viewTrackText.setText(textTrack);
             bindArtist(artistDTO);
@@ -209,8 +208,12 @@ public class InfoFragment extends Fragment {
             viewBiography.setText(artist.getBiographyEn());
         }
 
-        GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
-        GlideApp.with(this).load(artist.getArtistLogoUrl()).centerCrop().into(buttonWebSite);
+        Glide.with(this).load(artist.getArtUrl())
+                .apply(new RequestOptions().centerCrop())
+                .into(viewArtistArt);
+        Glide.with(this).load(artist.getArtistLogoUrl())
+                .apply(new RequestOptions().centerCrop())
+                .into(buttonWebSite);
 
         if (artist.getFacebookUrl() != null) {
             buttonFacebook.setOnClickListener(btn -> {
@@ -218,7 +221,7 @@ public class InfoFragment extends Fragment {
                     String url = UrlAdapter.adapt(artist.getFacebookUrl());
                     Intent facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(facebookIntent);
-                } catch (Exception e){
+                } catch (Exception e) {
                     App.logE(e.getMessage());
                 }
             });

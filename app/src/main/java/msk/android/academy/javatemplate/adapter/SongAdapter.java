@@ -22,9 +22,11 @@ import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
+    private int count;
     private Context context;
     private List<Song> songsList;
 
@@ -81,6 +83,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             durationTextView = view.findViewById(R.id.duration);
             image = view.findViewById(R.id.primary_action);
 
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -89,6 +92,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                     if (position != RecyclerView.NO_POSITION) {
                         EventBus.getDefault().post(new SongClickEvent(songsList, position));
                     }
+
+                    Song song = songsList.get(position);
+                    song.incrementCount();
+                    App.getDatabase().songDao().update(song);
                 }
             });
         }

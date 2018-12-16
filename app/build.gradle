@@ -58,6 +58,9 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     implementation "android.arch.persistence.room:rxjava2:$room_version"
 
+    // Stettho
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+
     //LiveData + ViewModel
     implementation "android.arch.lifecycle:extensions:$jetpack_version"
 
