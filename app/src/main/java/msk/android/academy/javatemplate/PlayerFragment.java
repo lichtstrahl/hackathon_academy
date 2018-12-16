@@ -1,6 +1,8 @@
 package msk.android.academy.javatemplate;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -20,16 +23,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import msk.android.academy.javatemplate.events.DetailsEvent;
-import msk.android.academy.javatemplate.events.GoPlayerEvent;
-import msk.android.academy.javatemplate.events.PausePlayerEvent;
-import msk.android.academy.javatemplate.events.PlayNextEvent;
-import msk.android.academy.javatemplate.events.PlayPrevEvent;
 import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 
 public class PlayerFragment extends Fragment {
 
@@ -52,20 +50,12 @@ public class PlayerFragment extends Fragment {
     @BindView(R.id.tv_name)
     TextView tvName;
 
+    @BindView(R.id.image)
+    ImageView image;
+
     @Nullable
     private PlayerFragmentListener listener;
 
-    //private boolean playing = false;
-
-
-//    public static void start(Context activity, List<Song> songs, int currentPos) {
-//        Intent startIntent = new Intent(activity, PlayerFragment.class);
-//        PlayerFragment.sStart = true;
-//
-//        startIntent.putExtra(KEY_CURPOS, currentPos);
-//        startIntent.putExtra(KEY_LIST, (ArrayList<Song>) songs);
-//        activity.startActivity(startIntent);
-//    }
 
     public static PlayerFragment getInstance(List<Song> songs, int currentPos) {
         PlayerFragment fragment = new PlayerFragment();
@@ -86,6 +76,16 @@ public class PlayerFragment extends Fragment {
 
         curPos = getArguments().getInt(KEY_CURPOS, 0);
         songs = (List<Song>) getArguments().getSerializable(KEY_LIST);
+
+        String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),songs.get(curPos).getCover()));
+
+        GlideApp.with(getContext())
+                .asBitmap()
+                .placeholder(R.drawable.ic_library_music)
+                .centerInside()
+                .load(albumArtUri)
+                .into(image);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -108,37 +108,6 @@ public class PlayerFragment extends Fragment {
         });
 
         return view;
-    }
-
-    @OnClick(R.id.btn_startstop)
-    void onButtonStartStop() {
-        if (listener != null) {
-            if (listener.isPlaying()) {
-                //musicSrv.pausePlayer();
-                EventBus.getDefault().post(new PausePlayerEvent());
-            } else {
-                //musicSrv.go();
-                EventBus.getDefault().post(new GoPlayerEvent());
-            }
-        }
-        //playing = !playing;
-    }
-
-    @OnClick(R.id.btn_forward)
-    void onButtonForward() {
-        //musicSrv.playNext();
-        EventBus.getDefault().post(new PlayNextEvent());
-    }
-
-    @OnClick(R.id.btn_back)
-    void onButtonBack() {
-        //musicSrv.playPrev();
-        EventBus.getDefault().post(new PlayPrevEvent());
-    }
-
-    @OnClick(R.id.btn_info)
-    void onButtonInfo() {
-        EventBus.getDefault().post(new DetailsEvent(artist, name));
     }
 
     //start and bind the service when the activity starts
