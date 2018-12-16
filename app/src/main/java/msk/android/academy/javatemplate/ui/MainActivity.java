@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
@@ -17,6 +21,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -41,6 +46,8 @@ import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
 
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+
 public class MainActivity extends AppCompatActivity implements PlayerFragment.PlayerFragmentListener {
     @BindView(R.id.layoutBG)
     ViewGroup layoutBG;
@@ -55,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
     private MusicService musicSrv;
     private Intent playIntent;
 
+    private static final int REQUEST_READ_STORAGE = 42;
 
     private List<Song> songs;
     private int curPos;
@@ -65,12 +73,46 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.layoutBG, new SongListFragment())
-                    .addToBackStack(null)
-                    .commit();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
+            showRequestRationaleDialog();
+        } else {
+            if (savedInstanceState == null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.layoutBG, new SongListFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
+    }
+
+    private void showRequestRationaleDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Внимание!")
+                .setMessage("Для корректной работы приложения необходим доступ к sd-карте.")
+                .setPositiveButton("Понятно", (dialogInterface, i) ->
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                REQUEST_READ_STORAGE))
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_READ_STORAGE) {
+            if (permissions[0].equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[0] == PERMISSION_DENIED) {
+                Toast.makeText(this, "Приложение не может работать без доступа к sd-карте.", Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                //if (savedInstanceState == null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.layoutBG, new SongListFragment())
+                            .addToBackStack(null)
+                            .commit();
+                //}
+            }
         }
     }
 
