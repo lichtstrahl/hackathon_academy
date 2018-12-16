@@ -9,11 +9,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ProgressBar
+            android:id="@+id/progressInfo"
+            android:layout_width="@dimen/progressBarSize"
+            android:layout_height="@dimen/progressBarSize"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:id="@+id/buttonReconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/reconnect"
+            android:textSize="@dimen/smallText"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
         <TextView
             android:id="@+id/viewTrackName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_below="@id/progressInfo"
             android:layout_margin="@dimen/stdMargin"
             android:maxLines="1" />
 
@@ -36,12 +53,22 @@
                 android:layout_marginBottom="@dimen/stdMargin"
                 android:layout_marginStart="@dimen/bigMargin"
                 android:layout_marginEnd="@dimen/bigMargin">
-
-                <TextView
-                    android:id="@+id/viewTrackText"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/xText"/>
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ProgressBar
+                        android:id="@+id/progressText"
+                        android:layout_width="@dimen/progressBarSize"
+                        android:layout_height="@dimen/progressBarSize"
+                        android:layout_gravity="center"/>
+                    <TextView
+                        android:id="@+id/viewTrackText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/xText"/>
+                </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </android.support.v7.widget.CardView>
 

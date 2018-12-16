@@ -3,4 +3,7 @@
     <string name="artistArt">Изображение артиста</string>
     <string name="reconnect">Переподключиться</string>
     <string name="loading">Загрузка. Пожалуйста подождите ...</string>
+    <string name="errorNetworkLoading">Не удалось загрузить данные. Попробовать снова?</string>
+    <string name="notFoundTextForTrack">Не удалось найти текст песни</string>
+    <string name="notFoundInfoForArtist">Не удалось найти информацию о группе</string>
 </resources>

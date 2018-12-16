@@ -10,10 +10,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -23,10 +26,11 @@ import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.network.FullInfo;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
-import msk.android.academy.javatemplate.network.dto.MusicResponse;
+import msk.android.academy.javatemplate.network.dto.LyricResponse;
 import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 import msk.android.academy.javatemplate.network.util.UrlAdapter;
+import retrofit2.HttpException;
 
 public class InfoFragment extends Fragment {
     private static final String INTENT_ARTIST = "args:artist";
@@ -44,8 +48,11 @@ public class InfoFragment extends Fragment {
     private TextView viewTrackName;
     private ImageButton buttonFacebook;
     private ImageButton buttonWebSite;
-    private NetworkObserver<FullInfo> loadObserver;
-    private AlertDialog loadDialog;
+    private Button buttonReconnect;
+    private ProgressBar progressLoadInfo;
+    private ProgressBar progressLoadText;
+    private NetworkObserver<LyricResponse> loadLyricObserver;
+    private NetworkObserver<InfoResponse> loadInfoObserver;
     private ArtistDTO artistDTO;
     private String textTrack;
 
@@ -62,11 +69,12 @@ public class InfoFragment extends Fragment {
         viewTrackName = view.findViewById(R.id.viewTrackName);
         buttonFacebook = view.findViewById(R.id.buttonFacebook);
         buttonWebSite = view.findViewById(R.id.buttonWebSite);
-        loadObserver = new NetworkObserver<>(this::successfulLoad, this::errorNetwork);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext())
-                .setView(R.layout.layout_dialog_loading)
-                .setCancelable(false);
+        buttonReconnect = view.findViewById(R.id.buttonReconnect);
+        progressLoadInfo = view.findViewById(R.id.progressInfo);
+        progressLoadText = view.findViewById(R.id.progressText);
+        loadLyricObserver = new NetworkObserver<>(this::successfulLoadText, this::errorLoadText);
+        loadInfoObserver = new NetworkObserver<>(this::successfulLoadInfo, this::errorLoadInfo);
+        buttonReconnect.setOnClickListener(this::clickReconnect);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -82,28 +90,35 @@ public class InfoFragment extends Fragment {
             textTrack = savedInstanceState.getString(SAVE_TEXT);
             viewTrackText.setText(textTrack);
             bindArtist(artistDTO);
+            progressLoadInfo.setVisibility(View.GONE);
+            progressLoadText.setVisibility(View.GONE);
         }
 
         // Даже если это поворот экрана, возможно загрузка не была завершена
         if (savedInstanceState == null || artistDTO == null) {
-            loadDialog = builder.create();
-            loadDialog.show();
-
-            Observable singleTrack = App.getLyricAPI().getText(artist, track);
-            Observable singleInfo = App.getInfoAPI().searchArtist(artist);
-
-            Observable.combineLatest(
-                    singleTrack, singleInfo,
-                    (MusicResponse trackText, InfoResponse trackInfo) -> new FullInfo(trackText, trackInfo))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(loadObserver);
+            startLoad();
         }
 
-
-
-//        App.logI("Fragment created. Bundle: " + savedInstanceState);
         return view;
+    }
+
+
+    private void clickReconnect(View v) {
+        v.setVisibility(View.GONE);
+        startLoad();
+    }
+
+    private void startLoad() {
+        App.getLyricAPI().getText(artist, track)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadLyricObserver);
+        App.getInfoAPI().searchArtist(artist)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadInfoObserver);
+        progressLoadText.setVisibility(View.VISIBLE);
+        progressLoadInfo.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -116,7 +131,8 @@ public class InfoFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        loadObserver.unsubscribe();
+        loadInfoObserver.unsubscribe();
+        loadLyricObserver.unsubscribe();
     }
 
     public static InfoFragment getInstance(String artist, String track) {
@@ -128,25 +144,56 @@ public class InfoFragment extends Fragment {
         return iFragment;
     }
 
-    private void successfulLoad(FullInfo info) {
-        InfoResponse infoResponse = info.getInfoResponse();
-        MusicResponse musicResponse = info.getMusicResponse();
+    private void successfulLoadInfo(InfoResponse res) {
+        if (res.getArtists() == null) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
+        } else {
+            artistDTO = res.getArtists().get(0);
+            bindArtist(artistDTO);
+        }
+        progressLoadInfo.setVisibility(View.GONE);
+    }
 
-        if (musicResponse.getError() == null) {
-            textTrack = musicResponse.getLyrics();
+    private void successfulLoadText(LyricResponse res) {
+        if (res.getError() == null) {
+            textTrack = res.getLyrics();
             viewTrackText.setText(textTrack);
         } else {
             textTrack = "";
-            viewTrackText.setText(musicResponse.getError());
+            viewTrackText.setText(R.string.notFoundTextForTrack);
         }
-
-        artistDTO = infoResponse.getArtists().get(0);
-        bindArtist(artistDTO);
-        loadDialog.dismiss();
+        progressLoadText.setVisibility(View.GONE);
     }
 
-    private void errorNetwork(Throwable t) {
-        loadDialog.dismiss();
+    // HttpException, UnkownHostException
+    private void errorLoadInfo(Throwable t) {
+        // Нет интернета
+        if (t instanceof UnknownHostException) {
+            buttonReconnect.setVisibility(View.VISIBLE);
+        }
+
+        // Ошибка при запросе
+        if (t instanceof HttpException) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
+        }
+
+
+        progressLoadInfo.setVisibility(View.GONE);
+        App.logE(t.getMessage());
+    }
+
+    private void errorLoadText(Throwable t) {
+        // Нет интернета
+        if (t instanceof UnknownHostException) {
+            buttonReconnect.setVisibility(View.VISIBLE);
+        }
+
+        // Ошибка при запросе
+        if (t instanceof HttpException) {
+            viewTrackText.setText(R.string.notFoundTextForTrack);
+        }
+
+        progressLoadText.setVisibility(View.GONE);
         App.logE(t.getMessage());
     }
 

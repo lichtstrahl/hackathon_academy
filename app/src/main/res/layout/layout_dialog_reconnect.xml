@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/layout"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/dialogText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/progress"
+        android:layout_alignTop="@id/progress"
+        android:layout_alignBottom="@id/progress"
+        android:layout_margin="@dimen/stdMargin"
+        android:textSize="@dimen/bigText"
+        android:text="@string/loading"/>
+
+    <ImageButton
+        android:id="@+id/buttonReconnect"
+        android:layout_width="@dimen/xIcon"
+        android:layout_height="@dimen/xIcon"
+        android:backgroundTint="@android:color/transparent"
+        android:src="@drawable/ic_reconnect"
+        android:contentDescription="@string/reconnect"
+        android:layout_alignStart="@id/dialogText"
+        android:layout_alignEnd="@id/dialogText"
+        android:layout_below="@id/dialogText"/>
+
+</RelativeLayout>
