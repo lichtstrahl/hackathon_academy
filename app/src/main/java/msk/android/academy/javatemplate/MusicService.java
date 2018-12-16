@@ -66,6 +66,8 @@ public class MusicService extends Service implements
     private String name;
     private String artist;
 
+    private boolean firstStart = true;
+
     private int duration = 0;
 
     private boolean pushStart = false;
@@ -240,8 +242,9 @@ public class MusicService extends Service implements
         mp.start();
         pushStart = true;
         pause = false;
+        firstStart = false;
         //notification
-        Intent notIntent = new Intent(this, MainActivity.class);
+        /*Intent notIntent = new Intent(this, MainActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -255,6 +258,27 @@ public class MusicService extends Service implements
                 .setTicker(songTitle)
                 .setOngoing(true)
                 .setContentTitle("Playing")
+                .setContentText(songTitle);
+        Notification not = builder.build();
+        startForeground(NOTIFY_ID, not);*/
+        createNotification("Проигрывается");
+    }
+
+    public void createNotification(String text){
+        Intent notIntent = new Intent(this, MainActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        createNotificationChannel();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
+
+        builder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setTicker(songTitle)
+                .setOngoing(true)
+                .setContentTitle(text)
                 .setContentText(songTitle);
         Notification not = builder.build();
         startForeground(NOTIFY_ID, not);
@@ -277,6 +301,8 @@ public class MusicService extends Service implements
         pushStart = false;
         pause = false;
         player.pause();
+
+        createNotification("На паузе");
     }
 
     public void seek(int posn) {
@@ -353,4 +379,9 @@ public class MusicService extends Service implements
     protected void onHandleIntent(@Nullable Intent intent) {
 
     }*/
+
+
+    public boolean isFirstStart(){
+        return firstStart;
+    }
 }
