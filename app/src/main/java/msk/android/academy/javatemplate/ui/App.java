@@ -1,9 +1,13 @@
 package msk.android.academy.javatemplate.ui;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 import android.util.Log;
 
+import com.facebook.stetho.Stetho;
+
 import msk.android.academy.javatemplate.BuildConfig;
+import msk.android.academy.javatemplate.db.AppDatabase;
 import msk.android.academy.javatemplate.network.InfoAPI;
 import msk.android.academy.javatemplate.network.LyricAPI;
 import okhttp3.OkHttpClient;
@@ -13,13 +17,20 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class App extends Application {
+    private static AppDatabase database;
+    private static final String nameDB = "dbMusicInfo";
     private static LyricAPI lyricAPI;
     private static InfoAPI infoAPI;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
 
+        database = Room.databaseBuilder(this, AppDatabase.class, nameDB)
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
 
         
         OkHttpClient client = new OkHttpClient.Builder()
@@ -51,6 +62,10 @@ public class App extends Application {
 
     public static InfoAPI getInfoAPI() {
         return infoAPI;
+    }
+
+    public static AppDatabase getDB() {
+        return database;
     }
 
     public static void logI(String msg) {

@@ -1,6 +1,5 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,13 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
-import msk.android.academy.javatemplate.network.FullInfo;
+import msk.android.academy.javatemplate.db.InfoEntity;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.LyricResponse;
@@ -109,14 +109,29 @@ public class InfoFragment extends Fragment {
     }
 
     private void startLoad() {
-        App.getLyricAPI().getText(artist, track)
+        Observable oLyric = App.getLyricAPI().getText(artist, track);
+        Observable oInfo = App.getInfoAPI().searchArtist(artist);
+
+        oLyric
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loadLyricObserver);
-        App.getInfoAPI().searchArtist(artist)
+
+        oInfo
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(loadInfoObserver);
+
+//        Observable.combineLatest(
+//                oLyric, oInfo,
+//                (res1, res2) -> {
+//                    return "";
+//                }
+//        )
+//        .subscribeOn(Schedulers.io())
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe(mainLoadObserver);
+
         progressLoadText.setVisibility(View.VISIBLE);
         progressLoadInfo.setVisibility(View.VISIBLE);
     }
@@ -133,6 +148,7 @@ public class InfoFragment extends Fragment {
         super.onDestroyView();
         loadInfoObserver.unsubscribe();
         loadLyricObserver.unsubscribe();
+//        mainLoadObserver.unsubscribe();
     }
 
     public static InfoFragment getInstance(String artist, String track) {
@@ -150,6 +166,15 @@ public class InfoFragment extends Fragment {
         } else {
             artistDTO = res.getArtists().get(0);
             bindArtist(artistDTO);
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, artistDTO);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromArtistDTO(artistDTO);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         }
         progressLoadInfo.setVisibility(View.GONE);
     }
@@ -158,6 +183,16 @@ public class InfoFragment extends Fragment {
         if (res.getError() == null) {
             textTrack = res.getLyrics();
             viewTrackText.setText(textTrack);
+
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, textTrack);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromLyric(textTrack);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         } else {
             textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
@@ -211,7 +246,6 @@ public class InfoFragment extends Fragment {
 
         GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
         GlideApp.with(this).load(artist.getArtistLogoUrl()).centerCrop().into(buttonWebSite);
-
         if (artist.getFacebookUrl() != null) {
             buttonFacebook.setOnClickListener(btn -> {
                 try {
