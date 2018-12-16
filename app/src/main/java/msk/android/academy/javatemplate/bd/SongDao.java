@@ -20,7 +20,7 @@ public interface SongDao {
     Song getById(long id);
 
     @Query("SELECT * FROM song WHERE title = :title AND artist = :artist")
-    List<Song> searchSongs(String artist, String title);
+    Song searchSongs(String artist, String title);
 
     @Insert
     void insert(Song employee);

@@ -93,13 +93,16 @@ public class SongListFragment extends Fragment {
                 long songAlbum = cursor.getLong(albumId);
 
                 Song song = new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum);
-                List<Song> list = App.getFavoritesDB().songDao().searchSongs(SongArtist, SongTitle);
-                if (list.isEmpty()) {
+                Song list = App.getFavoritesDB().songDao().searchSongs(SongArtist, SongTitle);
+                if (list == null) {
                     App.getFavoritesDB().songDao().insert(song);
+                    listSongs.add(list);
+                } else {
+                    listSongs.add(list);
                 }
-                listSongs.add(song);
 
             } while (cursor.moveToNext());
+
         }
     }
 

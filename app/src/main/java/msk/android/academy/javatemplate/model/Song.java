@@ -10,7 +10,6 @@ public class Song implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-
     private String artist;
     private String title;
     private long audioResourceId;
