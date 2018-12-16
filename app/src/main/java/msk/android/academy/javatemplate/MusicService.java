@@ -8,7 +8,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -62,9 +67,49 @@ public class MusicService extends Service implements
 
     private int duration = 0;
 
-    /*public MusicService() {
-        super("aaaa");
-    }*/
+    private boolean pushStart = false;
+    private boolean pause = false;
+    private SensorManager sensorManager;
+    private Sensor sensorAcceleration;
+    private SensorEventListener listener = new SensorEventListener() {
+        float[] rotMat = new float[9];
+        float[] vals = new float[3];
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && pushStart){
+                SensorManager.getRotationMatrixFromVector(rotMat,
+                        sensorEvent.values);
+                SensorManager
+                        .remapCoordinateSystem(rotMat,
+                                SensorManager.AXIS_X, SensorManager.AXIS_Y,
+                                rotMat);
+                SensorManager.getOrientation(rotMat, vals);
+                float roll = (float) Math.toDegrees(vals[2]);
+
+                if (Math.abs(roll) > 160) {
+                    if (!pause) {
+                        pause = true;
+                        if (player.isPlaying()) {
+                            player.pause();
+                        }
+                    }
+                }
+
+                if (Math.abs(roll) < 20) {
+                    pause = false;
+                    if (!player.isPlaying()) {
+                        player.start();
+                    }
+                }
+
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {
+
+        }
+    };
 
     public void onCreate() {
         //create the service
@@ -78,11 +123,16 @@ public class MusicService extends Service implements
         //initialize
         initMusicPlayer();
 
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorAcceleration =
+                sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
         mTimerDisposable = Observable.interval(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(MusicService.this::onTimerUpdate);
     }
+
 
     private void onTimerUpdate(long totalSeconds) {
         if (player.isPlaying()) {
@@ -116,14 +166,19 @@ public class MusicService extends Service implements
     //activity will bind to service
     @Override
     public IBinder onBind(Intent intent) {
+        sensorManager.registerListener(listener, sensorAcceleration,
+                SensorManager.SENSOR_DELAY_NORMAL);
         return musicBind;
     }
 
     //release resources when unbind
     @Override
     public boolean onUnbind(Intent intent) {
-        player.stop();
-        player.release();
+        //player.stop();
+        pushStart = false;
+        pause = true;
+        //player.release();
+        sensorManager.unregisterListener(listener);
         return false;
     }
 
@@ -180,6 +235,8 @@ public class MusicService extends Service implements
         duration = player.getDuration();
         //start playback
         mp.start();
+        pushStart = true;
+        pause = false;
         //notification
         Intent notIntent = new Intent(this, MainActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -214,6 +271,8 @@ public class MusicService extends Service implements
     }
 
     public void pausePlayer() {
+        pushStart = false;
+        pause = false;
         player.pause();
     }
 
@@ -222,6 +281,8 @@ public class MusicService extends Service implements
     }
 
     public void go() {
+        pushStart = true;
+        pause = false;
         player.start();
     }
 

@@ -4,14 +4,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -39,6 +44,9 @@ import msk.android.academy.javatemplate.model.Song;
 public class MainActivity extends AppCompatActivity implements PlayerFragment.PlayerFragmentListener {
     @BindView(R.id.layoutBG)
     ViewGroup layoutBG;
+
+    @BindView(R.id.ll_control)
+    ViewGroup llControl;
 
     @BindView(R.id.btn_startstop)
     ImageButton btnStartStop;
@@ -102,6 +110,18 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
     public void onSongClicked(@NonNull SongClickEvent event) {
         PlayerFragment playerFragment = PlayerFragment.getInstance(event.getSongs(), event.getPosition());
         PlayerFragment.sStart = true;
+
+        llControl.setVisibility(View.VISIBLE);
+        Resources r = getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                50,
+                r.getDisplayMetrics()
+        );
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layoutBG.getLayoutParams();
+        params.setMargins(0, 0, 0, px);
+        layoutBG.setLayoutParams(params);
+
 
         songs = event.getSongs();
         curPos = event.getPosition();
@@ -173,6 +193,19 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             //}
             //playing = musicSrv.isPlaying();
             //musicBound = true;
+
+            if (musicSrv.isPlaying()){
+                llControl.setVisibility(View.VISIBLE);
+                Resources r = getResources();
+                int px = (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        50,
+                        r.getDisplayMetrics()
+                );
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layoutBG.getLayoutParams();
+                params.setMargins(0, 0, 0, px);
+                layoutBG.setLayoutParams(params);
+            }
         }
 
         @Override
