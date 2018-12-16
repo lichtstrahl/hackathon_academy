@@ -250,7 +250,6 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             }
 
 
-            //if (musicSrv.isPlaying())
             if (!musicSrv.isFirstStart())
             {
                 llControl.setVisibility(View.VISIBLE);
