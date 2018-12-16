@@ -68,21 +68,28 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
         if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            //startService(playIntent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startService(playIntent);
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(playIntent);
             } else {
                 startService(playIntent);
-            }
+            }*/
         }
     }
 
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
+        //unbindService(musicConnection);
         super.onStop();
 
         //unbindService(musicConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //unbindService(musicConnection);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -170,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
 
     @Override
     public void startService() {
-        /*if (playIntent == null) {
+        if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             //startService(playIntent);
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             } else {
                 startService(playIntent);
             }
-        }*/
+        }
     }
 
     @Override
