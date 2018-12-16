@@ -22,6 +22,7 @@ import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
@@ -50,7 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         String albumArtUri = String.valueOf(ContentUris.withAppendedId(
                 Uri.parse("content://media/external/audio/albumart"),songsList.get(position).getCover()));
 
-        Glide.with(context)
+        GlideApp.with(context)
                 .asBitmap()
                 .load(albumArtUri)
                 .into(viewHolder.image);

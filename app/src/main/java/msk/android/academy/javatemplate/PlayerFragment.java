@@ -1,9 +1,11 @@
 package msk.android.academy.javatemplate;
 
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -36,6 +39,7 @@ import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.ui.InfoFragment;
 
 public class PlayerFragment extends Fragment {
@@ -58,6 +62,9 @@ public class PlayerFragment extends Fragment {
 
     @BindView(R.id.tv_name)
     TextView tvName;
+
+    @BindView(R.id.image)
+    ImageView image;
 
     @Nullable
     private PlayerFragmentListener listener;
@@ -95,6 +102,16 @@ public class PlayerFragment extends Fragment {
         curPos = getArguments().getInt(KEY_CURPOS, 0);
         songs = (List<Song>) getArguments().getSerializable(KEY_LIST);
 
+        String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+                Uri.parse("content://media/external/audio/albumart"),songs.get(curPos).getCover()));
+
+        GlideApp.with(getContext())
+                .asBitmap()
+                .placeholder(R.drawable.ic_library_music)
+                .centerInside()
+                .load(albumArtUri)
+                .into(image);
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -116,32 +133,6 @@ public class PlayerFragment extends Fragment {
         });
 
         return view;
-    }
-
-    @OnClick(R.id.btn_startstop)
-    void onButtonStartStop() {
-        if (listener != null) {
-            if (listener.isPlaying()) {
-                //musicSrv.pausePlayer();
-                EventBus.getDefault().post(new PausePlayerEvent());
-            } else {
-                //musicSrv.go();
-                EventBus.getDefault().post(new GoPlayerEvent());
-            }
-        }
-        //playing = !playing;
-    }
-
-    @OnClick(R.id.btn_forward)
-    void onButtonForward() {
-        //musicSrv.playNext();
-        EventBus.getDefault().post(new PlayNextEvent());
-    }
-
-    @OnClick(R.id.btn_back)
-    void onButtonBack() {
-        //musicSrv.playPrev();
-        EventBus.getDefault().post(new PlayPrevEvent());
     }
 
     @OnClick(R.id.btn_info)

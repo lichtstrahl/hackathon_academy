@@ -27,6 +27,7 @@
         android:gravity="center">
 
         <ImageButton
+            android:id="@+id/btn_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_skip_previous"
@@ -34,6 +35,7 @@
             android:layout_margin="16dp"/>
 
         <ImageButton
+            android:id="@+id/btn_startstop"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:src="@drawable/ic_play_circle_outline"
@@ -41,6 +43,7 @@
             android:layout_margin="16dp"/>
 
         <ImageButton
+            android:id="@+id/btn_forward"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_skip_next"
