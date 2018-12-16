@@ -54,6 +54,9 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     }
 
     public void append(Song item) {
+        for (Song s : songsList)
+            if (s.getTitle().equals(item.getTitle()) && s.getArtist().equals(item.getArtist()))
+                return;
         songsList.add(item);
         notifyItemInserted(songsList.size()-1);
     }

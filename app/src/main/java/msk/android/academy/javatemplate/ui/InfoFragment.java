@@ -263,7 +263,7 @@ public class InfoFragment extends Fragment {
                 .apply(new RequestOptions().centerCrop())
                 .into(buttonWebSite);
 
-        if (artist.getFacebookUrl() != null) {
+        if (artist.getFacebookUrl() != null && !artist.getFacebookUrl().isEmpty()) {
             buttonFacebook.setOnClickListener(btn -> {
                 try {
                     String url = UrlAdapter.adapt(artist.getFacebookUrl());
@@ -277,7 +277,7 @@ public class InfoFragment extends Fragment {
             buttonFacebook.setVisibility(View.GONE);
         }
 
-        if (artist.getWebSiteUrl() != null) {
+        if (artist.getWebSiteUrl() != null && !artist.getFacebookUrl().isEmpty()) {
             buttonWebSite.setOnClickListener(btn -> {
                 try {
                     String url = UrlAdapter.adapt(artist.getWebSiteUrl());

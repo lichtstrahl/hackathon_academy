@@ -24,6 +24,7 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@+id/primary_action"
+        android:layout_toStartOf="@id/viewCount"
         android:orientation="vertical"
         android:paddingTop="16dp">
 
@@ -31,18 +32,19 @@
             android:id="@+id/song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:singleLine="false"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:textSize="@dimen/stdText"
             tools:text="First Line " />
 
         <TextView
             android:id="@+id/artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="@dimen/stdText"
             tools:text="Second Line" />
 
     </LinearLayout>
