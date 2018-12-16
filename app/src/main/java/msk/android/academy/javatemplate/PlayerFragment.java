@@ -33,6 +33,7 @@ import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.util.GlideApp;
 
 public class PlayerFragment extends Fragment {
@@ -40,6 +41,10 @@ public class PlayerFragment extends Fragment {
     public static boolean sStart = false;
     public static final String KEY_CURPOS = "KEY_CURPOS";
     public static final String KEY_LIST = "KEY_LIST";
+    public static final String SAVE_PROGRESS = "SAVE_PROGRESS";
+    public static final String SAVE_DURATION = "SAVE_DURATION";
+    public static final String SAVE_NAME = "SAVE_NAME";
+    public static final String SAVE_ARTIST = "SAVE_ARTIST";
 
     private List<Song> songs;
     private int curPos;
@@ -62,8 +67,13 @@ public class PlayerFragment extends Fragment {
     @Nullable
     private PlayerFragmentListener listener;
 
+    private int progress;
+
     private long songId = -1;
     //private boolean playing = false;
+
+    private int duration;
+    //private int progress;
 
 
 
@@ -121,13 +131,39 @@ public class PlayerFragment extends Fragment {
                 if (fromUser) {
                     //musicSrv.seek(progress);
                     EventBus.getDefault().post(new SeekEvent(progress));
+                    tvTime.setText(getTimeText(progress, duration));
                     //mediaPlayer.seekTo(progress);
                     //updateTime();
                 }
             }
         });
 
+        if (savedInstanceState != null) {
+            progress = savedInstanceState.getInt(SAVE_PROGRESS);
+            duration = savedInstanceState.getInt(SAVE_DURATION);
+            name = savedInstanceState.getString(SAVE_NAME);
+            artist = savedInstanceState.getString(SAVE_ARTIST);
+
+        }
+
+        seekBar.setMax(duration);
+        seekBar.setProgress(progress);
+        if (name != null && artist != null) {
+            tvName.setText(name + " - " + artist);
+        }
+        tvTime.setText(getTimeText(progress, duration));
+
+
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVE_PROGRESS, seekBar.getProgress());
+        outState.putInt(SAVE_DURATION, seekBar.getMax());
+        outState.putString(SAVE_ARTIST, artist);
+        outState.putString(SAVE_NAME, name);
     }
 
     //start and bind the service when the activity starts
@@ -158,7 +194,7 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-
+        progress = seekBar.getProgress();
     }
 
     //@Override
@@ -186,10 +222,15 @@ public class PlayerFragment extends Fragment {
     public void onUpdateView(UpdateViewEvent event) {
         name = event.getName();
         artist = event.getArtist();
-        tvName.setText(name + " - " + artist);
+        if (name != null && artist != null) {
+            tvName.setText(name + " - " + artist);
+        }
         tvTime.setText(getTimeText(event.getSeconds(), event.getDuration()));
         seekBar.setMax(event.getDuration());
         seekBar.setProgress(event.getSeconds());
+
+        progress = event.getSeconds();
+        duration = event.getDuration();
 
         if (songId != event.getSongId()){
             songId = event.getSongId();

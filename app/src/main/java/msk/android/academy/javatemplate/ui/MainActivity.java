@@ -249,7 +249,9 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
                 btnFlip.setImageResource(R.drawable.ic_flip_to_back);
             }
 
-            if (musicSrv.isPlaying()){
+
+            if (!musicSrv.isFirstStart())
+            {
                 llControl.setVisibility(View.VISIBLE);
                 Resources r = getResources();
                 int px = (int) TypedValue.applyDimension(
@@ -260,6 +262,13 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layoutBG.getLayoutParams();
                 params.setMargins(0, 0, 0, px);
                 layoutBG.setLayoutParams(params);
+
+                if (musicSrv.isPlaying()) {
+                    btnStartStop.setImageResource(R.drawable.ic_pause_circle_outline);
+                } else {
+                    btnStartStop.setImageResource(R.drawable.ic_play_circle_outline);
+                }
+
             }
         }
 
