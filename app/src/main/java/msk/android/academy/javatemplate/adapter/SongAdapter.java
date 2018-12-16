@@ -47,13 +47,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         viewHolder.songId = songsList.get(position).getAudioResourceId();
         viewHolder.position = position;
 
-        String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+        /*String albumArtUri = String.valueOf(ContentUris.withAppendedId(
                 Uri.parse("content://media/external/audio/albumart"),songsList.get(position).getCover()));
 
         Glide.with(context)
                 .asBitmap()
                 .load(albumArtUri)
-                .into(viewHolder.image);
+                .into(viewHolder.image);*/
     }
 
     @Override
