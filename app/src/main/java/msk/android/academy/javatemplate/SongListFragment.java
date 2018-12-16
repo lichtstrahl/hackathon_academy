@@ -1,6 +1,7 @@
 package msk.android.academy.javatemplate;
 
 import android.content.ContentResolver;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +33,6 @@ public class SongListFragment extends Fragment {
     private Cursor cursor;
     private Uri uri;
     private ArrayList<Song> listSongs;
-    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,9 +55,12 @@ public class SongListFragment extends Fragment {
     private void adapter() {
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         adapter = new SongAdapter(getLayoutInflater(), listSongs);
-        recyclerView.setLayoutManager(layoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+        }
         recyclerView.setAdapter(adapter);
     }
 
