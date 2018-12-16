@@ -60,6 +60,14 @@
         android:gravity="center"
         android:text="3 20" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_toStartOf="@id/viewCount"
+        android:layout_alignTop="@id/viewCount"
+        android:layout_alignBottom="@id/viewCount"
+        android:src="@drawable/ic_action_headphones"/>
+
     <TextView
         android:id="@+id/viewCount"
         android:layout_width="wrap_content"
@@ -67,6 +75,7 @@
         android:textSize="@dimen/stdText"
         android:layout_toStartOf="@id/viewDuration"
         android:layout_alignTop="@id/viewDuration"
-        android:layout_alignBottom="@id/viewDuration"/>
+        android:layout_alignBottom="@id/viewDuration"
+        android:layout_marginTop="1dp"/>
 
 </RelativeLayout>
