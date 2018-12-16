@@ -62,10 +62,6 @@ public class MusicService extends Service implements
 
     private int duration = 0;
 
-    /*public MusicService() {
-        super("aaaa");
-    }*/
-
     public void onCreate() {
         //create the service
         super.onCreate();
@@ -271,8 +267,4 @@ public class MusicService extends Service implements
             }
         }
     }
-
-    /*@Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-    }*/
 }

@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.content.Entity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,19 +15,24 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
+import msk.android.academy.javatemplate.db.InfoEntity;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.LyricResponse;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 import msk.android.academy.javatemplate.network.util.UrlAdapter;
 import retrofit2.HttpException;
@@ -108,16 +114,31 @@ public class InfoFragment extends Fragment {
     }
 
     private void startLoad() {
-        App.getLyricAPI().getText(artist, track)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadLyricObserver);
-        App.getInfoAPI().searchArtist(artist)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadInfoObserver);
-        progressLoadText.setVisibility(View.VISIBLE);
-        progressLoadInfo.setVisibility(View.VISIBLE);
+        InfoEntity entity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+        if (entity == null) {
+            Observable oLyric = App.getLyricAPI().getText(artist, track);
+            Observable oInfo = App.getInfoAPI().searchArtist(artist);
+
+            oLyric
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadLyricObserver);
+
+            oInfo
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadInfoObserver);
+
+            progressLoadText.setVisibility(View.VISIBLE);
+            progressLoadInfo.setVisibility(View.VISIBLE);
+            Toast.makeText(this.getContext(), "В БД нету, грузим", Toast.LENGTH_LONG).show();
+        } else {
+            artistDTO = entity.toAtristDTO();
+            textTrack = entity.getLyric();
+            bindArtist(artistDTO);
+            viewTrackText.setText(!textTrack.isEmpty() ? textTrack : getString(R.string.notFoundTextForTrack));
+            Toast.makeText(this.getContext(), "Уже есть в БД. Нахер интернет", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -145,10 +166,20 @@ public class InfoFragment extends Fragment {
 
     private void successfulLoadInfo(InfoResponse res) {
         if (res.getArtists() == null) {
-            viewStyle.setText(R.string.notFoundInfoForArtist);
+            artistDTO = null;
+            bindArtist(artistDTO);
         } else {
             artistDTO = res.getArtists().get(0);
             bindArtist(artistDTO);
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, artistDTO);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromArtistDTO(artistDTO);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         }
         progressLoadInfo.setVisibility(View.GONE);
     }
@@ -157,6 +188,16 @@ public class InfoFragment extends Fragment {
         if (res.getError() == null) {
             textTrack = res.getLyrics();
             viewTrackText.setText(textTrack);
+
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, textTrack);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromLyric(textTrack);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         } else {
             textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
@@ -173,6 +214,7 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            artistDTO = null;
             viewStyle.setText(R.string.notFoundInfoForArtist);
         }
 
@@ -189,6 +231,7 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
         }
 
@@ -197,8 +240,10 @@ public class InfoFragment extends Fragment {
     }
 
     private void bindArtist(@Nullable ArtistDTO artist) {
-        if (artist == null)
+        if (artist == null) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
             return;
+        }
         viewStyle.setText(artist.getStyle());
         viewGenre.setText(artist.getGenre());
 
@@ -208,6 +253,8 @@ public class InfoFragment extends Fragment {
             viewBiography.setText(artist.getBiographyEn());
         }
 
+        GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
+        GlideApp.with(this).load(artist.getArtistLogoUrl()).centerCrop().into(buttonWebSite);
         Glide.with(this).load(artist.getArtUrl())
                 .apply(new RequestOptions().centerCrop())
                 .into(viewArtistArt);

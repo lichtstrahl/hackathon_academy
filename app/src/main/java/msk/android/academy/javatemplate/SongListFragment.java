@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import msk.android.academy.javatemplate.adapter.SongAdapter;
 import msk.android.academy.javatemplate.model.Song;
@@ -92,10 +93,16 @@ public class SongListFragment extends Fragment {
                 long songAlbum = cursor.getLong(albumId);
 
                 Song song = new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum);
-                App.getFavoritesDB().songDao().insert(song);
-                listSongs.add(song);
+                Song list = App.getFavoritesDB().songDao().searchSongs(SongArtist, SongTitle);
+                if (list == null) {
+                    App.getFavoritesDB().songDao().insert(song);
+                    listSongs.add(list);
+                } else {
+                    listSongs.add(list);
+                }
 
             } while (cursor.moveToNext());
+
         }
     }
 

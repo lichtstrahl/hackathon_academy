@@ -7,7 +7,8 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 
 import msk.android.academy.javatemplate.BuildConfig;
-import msk.android.academy.javatemplate.bd.AppDatabase;
+import msk.android.academy.javatemplate.bd.SongDatabase;
+import msk.android.academy.javatemplate.db.InfoDatabase;
 import msk.android.academy.javatemplate.network.InfoAPI;
 import msk.android.academy.javatemplate.network.LyricAPI;
 import okhttp3.OkHttpClient;
@@ -19,20 +20,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class App extends Application {
 
     private static final String DATABASE_NAME = "alexDataBase";
+    private static InfoDatabase database;
+    private static final String nameDB = "dbMusicInfo";
     private static LyricAPI lyricAPI;
     private static InfoAPI infoAPI;
-    private static AppDatabase favoritesDB;
+    private static SongDatabase favoritesDB;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
 
-        favoritesDB = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME)
+        favoritesDB = Room.databaseBuilder(this, SongDatabase.class, DATABASE_NAME)
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
-        
+        database = Room.databaseBuilder(this, InfoDatabase.class, nameDB)
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
+
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .build();
@@ -64,6 +72,10 @@ public class App extends Application {
         return infoAPI;
     }
 
+    public static InfoDatabase getDB() {
+        return database;
+    }
+
     public static void logI(String msg) {
         Log.i(BuildConfig.TAG_GLOBAL, msg);
     }
@@ -76,7 +88,7 @@ public class App extends Application {
         Log.w(BuildConfig.TAG_GLOBAL, msg);
     }
 
-    public static AppDatabase getFavoritesDB() {
+    public static SongDatabase getFavoritesDB() {
         return favoritesDB;
     }
 }

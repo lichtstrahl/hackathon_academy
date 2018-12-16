@@ -21,6 +21,7 @@ import java.util.List;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
@@ -42,20 +43,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        viewHolder.songTextView.setText(songsList.get(position).getTitle());
-        viewHolder.artistTextView.setText(songsList.get(position).getArtist());
-        viewHolder.durationTextView.setText(songsList.get(position).getDuration());
-        viewHolder.songId = songsList.get(position).getAudioResourceId();
-        viewHolder.position = position;
-
-        String albumArtUri = String.valueOf(ContentUris.withAppendedId(
-                Uri.parse("content://media/external/audio/albumart"),songsList.get(position).getCover()));
-
-        Glide.with(context)
-                .asBitmap()
-                .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
-                .load(albumArtUri)
-                .into(viewHolder.image);
+        viewHolder.bindSong(songsList.get(position));
     }
 
     @Override
@@ -73,7 +61,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         private TextView durationTextView;
         private ImageView image;
         private long songId;
-        private int position;
 
         public ViewHolder(View view) {
             super(view);
@@ -98,6 +85,23 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                     App.getFavoritesDB().songDao().update(song);
                 }
             });
+        }
+
+
+        public  void bindSong(Song song) {
+            songTextView.setText(song.getTitle());
+            artistTextView.setText(song.getArtist());
+            durationTextView.setText(song.getDuration());
+            songId = song.getAudioResourceId();
+
+            String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+                    Uri.parse("content://media/external/audio/albumart"),song.getCover()));
+
+            Glide.with(context)
+                    .asBitmap()
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+                    .load(albumArtUri)
+                    .into(image);
         }
     }
 }
