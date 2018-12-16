@@ -99,10 +99,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
             String albumArtUri = String.valueOf(ContentUris.withAppendedId(
                     Uri.parse("content://media/external/audio/albumart"),song.getCover()));
+//
+//            Glide.with(context)
+//                    .asBitmap()
+//                    .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+//                    .load(albumArtUri)
+//                    .into(image);
 
-            Glide.with(context)
-                    .asBitmap()
-                    .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
+            GlideApp.with(context)
                     .load(albumArtUri)
                     .into(image);
         }

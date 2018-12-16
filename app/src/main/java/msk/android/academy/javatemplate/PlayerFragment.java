@@ -1,14 +1,9 @@
 package msk.android.academy.javatemplate;
 
-import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
-import android.os.Bundle;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build;
-import android.os.IBinder;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,18 +23,11 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import msk.android.academy.javatemplate.events.DetailsEvent;
-import msk.android.academy.javatemplate.events.GoPlayerEvent;
-import msk.android.academy.javatemplate.events.PausePlayerEvent;
-import msk.android.academy.javatemplate.events.PlayNextEvent;
-import msk.android.academy.javatemplate.events.PlayPrevEvent;
 import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
 import msk.android.academy.javatemplate.network.util.GlideApp;
-import msk.android.academy.javatemplate.ui.InfoFragment;
 
 public class PlayerFragment extends Fragment {
 
@@ -68,17 +56,6 @@ public class PlayerFragment extends Fragment {
     @Nullable
     private PlayerFragmentListener listener;
 
-    //private boolean playing = false;
-
-
-//    public static void start(Context activity, List<Song> songs, int currentPos) {
-//        Intent startIntent = new Intent(activity, PlayerFragment.class);
-//        PlayerFragment.sStart = true;
-//
-//        startIntent.putExtra(KEY_CURPOS, currentPos);
-//        startIntent.putExtra(KEY_LIST, (ArrayList<Song>) songs);
-//        activity.startActivity(startIntent);
-//    }
 
     public static PlayerFragment getInstance(List<Song> songs, int currentPos) {
         PlayerFragment fragment = new PlayerFragment();
@@ -131,37 +108,6 @@ public class PlayerFragment extends Fragment {
         });
 
         return view;
-    }
-
-    @OnClick(R.id.btn_startstop)
-    void onButtonStartStop() {
-        if (listener != null) {
-            if (listener.isPlaying()) {
-                //musicSrv.pausePlayer();
-                EventBus.getDefault().post(new PausePlayerEvent());
-            } else {
-                //musicSrv.go();
-                EventBus.getDefault().post(new GoPlayerEvent());
-            }
-        }
-        //playing = !playing;
-    }
-
-    @OnClick(R.id.btn_forward)
-    void onButtonForward() {
-        //musicSrv.playNext();
-        EventBus.getDefault().post(new PlayNextEvent());
-    }
-
-    @OnClick(R.id.btn_back)
-    void onButtonBack() {
-        //musicSrv.playPrev();
-        EventBus.getDefault().post(new PlayPrevEvent());
-    }
-
-    @OnClick(R.id.btn_info)
-    void onButtonInfo() {
-        EventBus.getDefault().post(new DetailsEvent(artist, name));
     }
 
     //start and bind the service when the activity starts
