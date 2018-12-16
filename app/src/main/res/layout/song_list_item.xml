@@ -22,9 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
         android:layout_toEndOf="@+id/primary_action"
-        android:layout_toRightOf="@+id/primary_action"
         android:orientation="vertical"
         android:paddingTop="16dp">
 
@@ -32,7 +31,7 @@
             android:id="@+id/song"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
+            android:layout_marginEnd="50dp"
             android:singleLine="false"
             android:textColor="@android:color/black"
             android:textSize="16sp"
@@ -49,7 +48,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/duration"
+        android:id="@+id/viewDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -58,5 +57,14 @@
         android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="3 20" />
+
+    <TextView
+        android:id="@+id/viewCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/stdText"
+        android:layout_toStartOf="@id/viewDuration"
+        android:layout_alignTop="@id/viewDuration"
+        android:layout_alignBottom="@id/viewDuration"/>
 
 </RelativeLayout>
