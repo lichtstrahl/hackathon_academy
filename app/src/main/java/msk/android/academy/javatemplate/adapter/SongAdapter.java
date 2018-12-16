@@ -22,6 +22,7 @@ import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
@@ -83,6 +84,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
+
                 public void onClick(View view) {
                     //PlayerFragment.start(context, songsList, position);
                     int position = getAdapterPosition();

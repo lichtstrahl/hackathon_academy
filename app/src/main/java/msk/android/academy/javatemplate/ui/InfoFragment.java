@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.content.Entity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -109,31 +111,31 @@ public class InfoFragment extends Fragment {
     }
 
     private void startLoad() {
-        Observable oLyric = App.getLyricAPI().getText(artist, track);
-        Observable oInfo = App.getInfoAPI().searchArtist(artist);
+        InfoEntity entity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+        if (entity == null) {
+            Observable oLyric = App.getLyricAPI().getText(artist, track);
+            Observable oInfo = App.getInfoAPI().searchArtist(artist);
 
-        oLyric
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadLyricObserver);
+            oLyric
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadLyricObserver);
 
-        oInfo
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadInfoObserver);
+            oInfo
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadInfoObserver);
 
-//        Observable.combineLatest(
-//                oLyric, oInfo,
-//                (res1, res2) -> {
-//                    return "";
-//                }
-//        )
-//        .subscribeOn(Schedulers.io())
-//        .observeOn(AndroidSchedulers.mainThread())
-//        .subscribe(mainLoadObserver);
-
-        progressLoadText.setVisibility(View.VISIBLE);
-        progressLoadInfo.setVisibility(View.VISIBLE);
+            progressLoadText.setVisibility(View.VISIBLE);
+            progressLoadInfo.setVisibility(View.VISIBLE);
+            Toast.makeText(this.getContext(), "В БД нету, грузим", Toast.LENGTH_LONG).show();
+        } else {
+            artistDTO = entity.toAtristDTO();
+            textTrack = entity.getLyric();
+            bindArtist(artistDTO);
+            viewTrackText.setText(!textTrack.isEmpty() ? textTrack : getString(R.string.notFoundTextForTrack));
+            Toast.makeText(this.getContext(), "Уже есть в БД. Нахер интернет", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -162,7 +164,8 @@ public class InfoFragment extends Fragment {
 
     private void successfulLoadInfo(InfoResponse res) {
         if (res.getArtists() == null) {
-            viewStyle.setText(R.string.notFoundInfoForArtist);
+            artistDTO = null;
+            bindArtist(artistDTO);
         } else {
             artistDTO = res.getArtists().get(0);
             bindArtist(artistDTO);
@@ -209,6 +212,7 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            artistDTO = null;
             viewStyle.setText(R.string.notFoundInfoForArtist);
         }
 
@@ -225,6 +229,7 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
         }
 
@@ -233,8 +238,10 @@ public class InfoFragment extends Fragment {
     }
 
     private void bindArtist(@Nullable ArtistDTO artist) {
-        if (artist == null)
+        if (artist == null) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
             return;
+        }
         viewStyle.setText(artist.getStyle());
         viewGenre.setText(artist.getGenre());
 

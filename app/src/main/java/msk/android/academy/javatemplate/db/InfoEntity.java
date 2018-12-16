@@ -63,4 +63,14 @@ public class InfoEntity {
         this.artistLogoUrl = dto.getArtistLogoUrl();
         this.webSiteUrl = dto.getWebSiteUrl();
     }
+
+    public ArtistDTO toAtristDTO() {
+        return new ArtistDTO(
+                artistName, style, genre, biographyRu, biographyEn, artUrl, facebookUrl, artistLogoUrl, webSiteUrl
+        );
+    }
+
+    public String getLyric() {
+        return lyrics;
+    }
 }

@@ -59,4 +59,16 @@ public class ArtistDTO implements Serializable {
     public String getWebSiteUrl() {
         return webSiteUrl;
     }
+
+    public ArtistDTO(String artistName, String style, String genre, String biographyRu, String biographyEn, String artUrl, String facebookUrl, String artistLogoUrl, String webSiteUrl) {
+        this.artistName = artistName;
+        this.style = style;
+        this.genre = genre;
+        this.biographyRu = biographyRu;
+        this.biographyEn = biographyEn;
+        this.artUrl = artUrl;
+        this.facebookUrl = facebookUrl;
+        this.artistLogoUrl = artistLogoUrl;
+        this.webSiteUrl = webSiteUrl;
+    }
 }
