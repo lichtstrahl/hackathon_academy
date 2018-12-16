@@ -91,25 +91,25 @@ public class SongListFragment extends Fragment {
             Toast.makeText(getContext(), "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else {
 
-            int Title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int Artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int atrist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int albumId = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
             do {
-                int SongID = cursor.getInt(id);
+                int songID = cursor.getInt(id);
 
-                String SongTitle = cursor.getString(Title);
-                String SongArtist = cursor.getString(Artist);
-                int SongDuration = cursor.getInt(duration);
+                String songTitle = cursor.getString(title);
+                String songArtist = cursor.getString(atrist);
+                int songDuration = cursor.getInt(duration);
                 long songAlbum = cursor.getLong(albumId);
 
-                Song song = new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum);
-                Song list = App.getFavoritesDB().songDao().searchSongs(SongArtist, SongTitle);
+                Song song = new Song(songTitle, songArtist, getDuration(songDuration), songID, songAlbum);
+                Song list = App.getFavoritesDB().songDao().searchSongs(songArtist, songTitle);
                 if (list == null) {
                     App.getFavoritesDB().songDao().insert(song);
-                    adapter.append(list);
+                    adapter.append(song);
                 } else {
                     adapter.append(list);
                 }

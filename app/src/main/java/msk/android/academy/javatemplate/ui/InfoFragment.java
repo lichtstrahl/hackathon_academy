@@ -1,5 +1,6 @@
 package msk.android.academy.javatemplate.ui;
 
+import android.arch.persistence.room.PrimaryKey;
 import android.content.Entity;
 import android.content.Intent;
 import android.net.Uri;
@@ -272,6 +273,8 @@ public class InfoFragment extends Fragment {
                     App.logE(e.getMessage());
                 }
             });
+        } else {
+            buttonFacebook.setVisibility(View.GONE);
         }
 
         if (artist.getWebSiteUrl() != null) {
@@ -284,6 +287,8 @@ public class InfoFragment extends Fragment {
                     App.logE(e.getMessage());
                 }
             });
+        } else {
+            buttonWebSite.setVisibility(View.GONE);
         }
     }
 }
