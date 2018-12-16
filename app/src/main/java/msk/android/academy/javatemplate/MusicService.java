@@ -1,6 +1,7 @@
 package msk.android.academy.javatemplate;
 
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,6 +15,8 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -29,6 +32,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.ui.MainActivity;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -39,7 +43,7 @@ public class MusicService extends Service implements
     private Disposable mTimerDisposable;
 
     //media player
-    private MediaPlayer player;
+    private MediaPlayer player = new MediaPlayer();
     //song list
     private List<Song> songs;
     //current position
@@ -54,8 +58,13 @@ public class MusicService extends Service implements
     private boolean shuffle = false;
     private Random rand;
     private String name;
+    private String artist;
 
     private int duration = 0;
+
+    /*public MusicService() {
+        super("aaaa");
+    }*/
 
     public void onCreate() {
         //create the service
@@ -65,7 +74,7 @@ public class MusicService extends Service implements
         //random
         rand = new Random();
         //create player
-        player = new MediaPlayer();
+        //player = new MediaPlayer();
         //initialize
         initMusicPlayer();
 
@@ -76,7 +85,9 @@ public class MusicService extends Service implements
     }
 
     private void onTimerUpdate(long totalSeconds) {
-        EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name));
+        if (player.isPlaying()) {
+            EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name, artist));
+        }
     }
 
     public void initMusicPlayer() {
@@ -127,7 +138,8 @@ public class MusicService extends Service implements
         //get id
         long currSong = playSong.getAudioResourceId();
 
-        name = playSong.getArtist() + " - " + playSong.getTitle();
+        name = playSong.getTitle();
+        artist = playSong.getArtist();
 
         //set uri
         Uri trackUri = ContentUris.withAppendedId(
@@ -169,7 +181,7 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, SongListFragment.class);
+        Intent notIntent = new Intent(this, MainActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -259,4 +271,9 @@ public class MusicService extends Service implements
             }
         }
     }
+
+    /*@Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+
+    }*/
 }

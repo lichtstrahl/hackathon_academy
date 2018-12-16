@@ -28,6 +28,7 @@ import msk.android.academy.javatemplate.events.GoPlayerEvent;
 import msk.android.academy.javatemplate.events.PausePlayerEvent;
 import msk.android.academy.javatemplate.events.PlayNextEvent;
 import msk.android.academy.javatemplate.events.PlayPrevEvent;
+import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
@@ -63,12 +64,32 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
     protected void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(playIntent);
+            } else {
+                startService(playIntent);
+            }*/
+        }
     }
 
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
+        //unbindService(musicConnection);
         super.onStop();
+
+        //unbindService(musicConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //unbindService(musicConnection);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -121,6 +142,15 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
         musicSrv.seek(event.getProgress());
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlaySong(@NonNull PlaySongEvent event) {
+        if (musicSrv!= null) {
+            musicSrv.setList(songs);
+            musicSrv.setSong(curPos);
+            musicSrv.playSong();
+        }
+    }
+
     private ServiceConnection musicConnection = new ServiceConnection() {
 
         @Override
@@ -129,12 +159,12 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             //get service
             musicSrv = binder.getService();
             //pass list
-            musicSrv.setList(songs);
-            musicSrv.setSong(curPos);
-            if (PlayerFragment.sStart) {
-                musicSrv.playSong();
-                PlayerFragment.sStart = false;
-            }
+            //musicSrv.setList(songs);
+            //musicSrv.setSong(curPos);
+            //if (PlayerFragment.sStart) {
+            //musicSrv.playSong();
+            //    PlayerFragment.sStart = false;
+            //}
             //playing = musicSrv.isPlaying();
             //musicBound = true;
         }
