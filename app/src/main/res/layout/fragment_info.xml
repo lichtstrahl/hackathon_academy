@@ -13,7 +13,7 @@
             android:id="@+id/progressInfo"
             android:layout_width="@dimen/progressBarSize"
             android:layout_height="@dimen/progressBarSize"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:visibility="gone" />
 
 
