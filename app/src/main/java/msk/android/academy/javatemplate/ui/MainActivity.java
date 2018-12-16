@@ -1,19 +1,15 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -72,21 +68,28 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
         if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            //startService(playIntent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startService(playIntent);
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(playIntent);
             } else {
                 startService(playIntent);
-            }
+            }*/
         }
     }
 
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
+        //unbindService(musicConnection);
         super.onStop();
 
         //unbindService(musicConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //unbindService(musicConnection);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
 
     @Override
     public void startService() {
-        /*if (playIntent == null) {
+        if (playIntent == null) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             //startService(playIntent);
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             } else {
                 startService(playIntent);
             }
-        }*/
+        }
     }
 
     @Override

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -54,6 +55,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
         Glide.with(context)
                 .asBitmap()
+                .apply(new RequestOptions().placeholder(R.drawable.ic_launcher_foreground))
                 .load(albumArtUri)
                 .into(viewHolder.image);
     }
