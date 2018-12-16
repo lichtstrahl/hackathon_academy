@@ -5,12 +5,18 @@ public class UpdateViewEvent {
     private String name;
     private String artist;
     private int duration;
+    private long songId;
+    private long coverId;
 
-    public UpdateViewEvent(int seconds, int duration, String name, String artist) {
+
+    public UpdateViewEvent(int seconds, int duration, String name, String artist, long songId, long coverId) {
+
         this.seconds = seconds;
         this.name = name;
         this.artist = artist;
         this.duration = duration;
+        this.songId = songId;
+        this.coverId = coverId;
     }
 
     public int getSeconds() {
@@ -27,5 +33,13 @@ public class UpdateViewEvent {
 
     public String getArtist() {
         return artist;
+    }
+
+    public long getSongId() {
+        return songId;
+    }
+
+    public long getCoverId() {
+        return coverId;
     }
 }

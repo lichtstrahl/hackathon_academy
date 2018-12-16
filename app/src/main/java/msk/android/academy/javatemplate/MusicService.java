@@ -48,7 +48,7 @@ public class MusicService extends Service implements
     private Disposable mTimerDisposable;
 
     //media player
-    private MediaPlayer player = new MediaPlayer();
+    private MediaPlayer player;// = new MediaPlayer();
     //song list
     private List<Song> songs;
     //current position
@@ -61,6 +61,7 @@ public class MusicService extends Service implements
     private static final int NOTIFY_ID = 1;
     //shuffle flag and random
     private boolean shuffle = false;
+    private boolean flip = false;
     private Random rand;
     private String name;
     private String artist;
@@ -76,7 +77,7 @@ public class MusicService extends Service implements
         float[] vals = new float[3];
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            if (sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && pushStart){
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR && pushStart && flip){
                 SensorManager.getRotationMatrixFromVector(rotMat,
                         sensorEvent.values);
                 SensorManager
@@ -119,7 +120,7 @@ public class MusicService extends Service implements
         //random
         rand = new Random();
         //create player
-        //player = new MediaPlayer();
+        player = new MediaPlayer();
         //initialize
         initMusicPlayer();
 
@@ -136,7 +137,8 @@ public class MusicService extends Service implements
 
     private void onTimerUpdate(long totalSeconds) {
         if (player.isPlaying()) {
-            EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name, artist));
+            EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration,
+                    name, artist, songs.get(songPosn).getAudioResourceId(), songs.get(songPosn).getCover()));
         }
     }
 
@@ -203,10 +205,11 @@ public class MusicService extends Service implements
         //set the data source
         try {
             player.setDataSource(getApplicationContext(), trackUri);
+            player.prepare();
         } catch (Exception e) {
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
-        player.prepareAsync();
+        //player.prepare();//Async();
     }
 
     //set the song
@@ -218,7 +221,7 @@ public class MusicService extends Service implements
     public void onCompletion(MediaPlayer mp) {
         //check if playback has reached the end of a track
         if (player.getCurrentPosition() > 0) {
-            mp.reset();
+            //mp.reset();
             playNext();
         }
     }
@@ -317,6 +320,19 @@ public class MusicService extends Service implements
     public void setShuffle() {
         if (shuffle) shuffle = false;
         else shuffle = true;
+    }
+
+    public boolean getShuffle(){
+        return shuffle;
+    }
+
+    public void setFlip() {
+        if (flip) flip = false;
+        else flip = true;
+    }
+
+    public boolean getFlip(){
+        return flip;
     }
 
     private void createNotificationChannel() {

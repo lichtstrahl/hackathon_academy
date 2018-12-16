@@ -72,6 +72,7 @@ public class PlayerFragment extends Fragment {
     @Nullable
     private PlayerFragmentListener listener;
 
+    private long songId = -1;
     //private boolean playing = false;
 
 
@@ -199,6 +200,22 @@ public class PlayerFragment extends Fragment {
         tvTime.setText(getTimeText(event.getSeconds(), event.getDuration()));
         seekBar.setMax(event.getDuration());
         seekBar.setProgress(event.getSeconds());
+
+        if (songId != event.getSongId()){
+            songId = event.getSongId();
+
+            String albumArtUri = String.valueOf(ContentUris.withAppendedId(
+                    Uri.parse("content://media/external/audio/albumart"),event.getCoverId()));
+
+            GlideApp.with(getContext())
+                    .asBitmap()
+                    .placeholder(R.drawable.ic_library_music)
+                    .centerInside()
+                    .load(albumArtUri)
+                    .into(image);
+
+            getActivity().setTitle(artist);
+        }
     }
 
     private String getTimeText(int seconds, int duration) {

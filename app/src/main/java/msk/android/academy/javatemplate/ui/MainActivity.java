@@ -58,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
     @BindView(R.id.btn_startstop)
     ImageButton btnStartStop;
 
+    @BindView(R.id.btn_shuffle)
+    ImageButton btnShuffle;
+
+    @BindView(R.id.btn_flip)
+    ImageButton btnFlip;
+
     //service
     private MusicService musicSrv;
     private Intent playIntent;
@@ -66,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
 
     private List<Song> songs;
     private int curPos;
+    private boolean shuffle = false;
+    private boolean flip = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,15 +234,20 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             //get service
             musicSrv = binder.getService();
-            //pass list
-            //musicSrv.setList(songs);
-            //musicSrv.setSong(curPos);
-            //if (PlayerFragment.sStart) {
-            //musicSrv.playSong();
-            //    PlayerFragment.sStart = false;
-            //}
-            //playing = musicSrv.isPlaying();
-            //musicBound = true;
+
+            shuffle = musicSrv.getShuffle();
+            if (musicSrv.getShuffle()) {
+                btnShuffle.setImageResource(R.drawable.ic_shuffle_active);
+            } else {
+                btnShuffle.setImageResource(R.drawable.ic_shuffle);
+            }
+
+            flip = musicSrv.getFlip();
+            if (musicSrv.getFlip()) {
+                btnFlip.setImageResource(R.drawable.ic_flip_to_back_active);
+            } else {
+                btnFlip.setImageResource(R.drawable.ic_flip_to_back);
+            }
 
             if (musicSrv.isPlaying()){
                 llControl.setVisibility(View.VISIBLE);
@@ -308,6 +321,32 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
             btnStartStop.setImageResource(R.drawable.ic_pause_circle_outline);
             //EventBus.getDefault().post(new GoPlayerEvent());
         }
+
+    }
+
+    @OnClick(R.id.btn_shuffle)
+    void onButtonShuffle() {
+        if (musicSrv.getShuffle()) {
+            btnShuffle.setImageResource(R.drawable.ic_shuffle);
+            //EventBus.getDefault().post(new PausePlayerEvent());
+        } else {
+            btnShuffle.setImageResource(R.drawable.ic_shuffle_active);
+            //EventBus.getDefault().post(new GoPlayerEvent());
+        }
+        musicSrv.setShuffle();
+
+    }
+
+    @OnClick(R.id.btn_flip)
+    void onButtonFlip() {
+        if (musicSrv.getFlip()) {
+            btnFlip.setImageResource(R.drawable.ic_flip_to_back);
+            //EventBus.getDefault().post(new PausePlayerEvent());
+        } else {
+            btnFlip.setImageResource(R.drawable.ic_flip_to_back_active);
+            //EventBus.getDefault().post(new GoPlayerEvent());
+        }
+        musicSrv.setFlip();
 
     }
 }
