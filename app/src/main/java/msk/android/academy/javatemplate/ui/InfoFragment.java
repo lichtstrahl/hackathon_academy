@@ -1,7 +1,5 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.arch.persistence.room.PrimaryKey;
-import android.content.Entity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
@@ -101,8 +98,9 @@ public class InfoFragment extends Fragment {
         }
 
         // Даже если это поворот экрана, возможно загрузка не была завершена
-        if (savedInstanceState == null || artistDTO == null) {
+        if (savedInstanceState == null || artistDTO == null || track == null) {
             startLoad();
+            App.logI("Repeat load");
         }
 
         return view;
@@ -183,6 +181,7 @@ public class InfoFragment extends Fragment {
             }
         }
         progressLoadInfo.setVisibility(View.GONE);
+        App.logI("Successful loadInfo");
     }
 
     private void successfulLoadText(LyricResponse res) {
@@ -204,6 +203,7 @@ public class InfoFragment extends Fragment {
             viewTrackText.setText(R.string.notFoundTextForTrack);
         }
         progressLoadText.setVisibility(View.GONE);
+        App.logI("Successful loadInfo");
     }
 
     // HttpException, UnkownHostException
@@ -221,7 +221,7 @@ public class InfoFragment extends Fragment {
 
 
         progressLoadInfo.setVisibility(View.GONE);
-        App.logE(t.getMessage());
+        App.logE("Error load info: " + t.getMessage());
     }
 
     private void errorLoadText(Throwable t) {
@@ -237,7 +237,7 @@ public class InfoFragment extends Fragment {
         }
 
         progressLoadText.setVisibility(View.GONE);
-        App.logE(t.getMessage());
+        App.logE("Error load text: " + t.getMessage());
     }
 
     private void bindArtist(@Nullable ArtistDTO artist) {
