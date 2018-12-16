@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import msk.android.academy.javatemplate.R;
@@ -23,12 +25,15 @@ import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     private List<Song> songsList;
+    private List<Song> originList;
     private LayoutInflater inflater;
 
     public SongAdapter(LayoutInflater inflater, List<Song> songsList) {
         this.inflater = inflater;
         this.songsList = songsList;
+        this.originList = new LinkedList<>();
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,6 +45,38 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         viewHolder.bindSong(songsList.get(position));
     }
+
+
+    public void clear() {
+        int count = songsList.size();
+        songsList.clear();
+        notifyItemRangeRemoved(0, count);
+    }
+
+    public void append(Song item) {
+        songsList.add(item);
+        notifyItemInserted(songsList.size()-1);
+    }
+
+    public void sort() {
+        Collections.sort(songsList, Song.Comparator);
+        notifyDataSetChanged();
+    }
+
+    public void setFilter(String filter) {
+        clear();
+        for (Song item : originList) {
+            String fullText = item.getArtist() + " " + item.getTitle();
+            if (fullText.toLowerCase().contains(filter.toLowerCase()))
+                append(item);
+        }
+        sort();
+    }
+    public void notifyOriginSong() {
+        originList.clear();
+        originList.addAll(songsList);
+    }
+
 
     @Override
     public int getItemCount() {

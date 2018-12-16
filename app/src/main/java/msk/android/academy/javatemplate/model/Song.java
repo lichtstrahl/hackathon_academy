@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 @Entity
 public class Song implements Serializable {
+    public static final Comparator Comparator = new Song.Comparator();
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -63,5 +64,18 @@ public class Song implements Serializable {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public static class Comparator implements java.util.Comparator<Song> {
+        @Override
+        public int compare(Song o1, Song o2) {
+            if (o1.getCount() > o2.getCount()) {
+                return -1;
+            } else if (o1.getCount() == o2.getCount()) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 }

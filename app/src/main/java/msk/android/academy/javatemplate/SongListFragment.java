@@ -15,11 +15,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 import msk.android.academy.javatemplate.adapter.SongAdapter;
 import msk.android.academy.javatemplate.model.Song;
@@ -33,18 +32,26 @@ public class SongListFragment extends Fragment {
     private Cursor cursor;
     private Uri uri;
     private ArrayList<Song> listSongs;
+    private EditText input;
+    private EditTextListener inputListener;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.song_list_activity);
         View view = inflater.inflate(R.layout.song_list_activity, container, false);
-
+        input = view.findViewById(R.id.searchInput);
+        inputListener = new EditTextListener(input);
         init(view);
         adapter();
+        inputListener.subscribe(adapter::setFilter);
         getAllMediaMp3Files();
-
         return view;
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        inputListener.unsubscribe();
     }
 
     private void init(View view) {
@@ -61,6 +68,8 @@ public class SongListFragment extends Fragment {
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
         }
+
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -100,13 +109,15 @@ public class SongListFragment extends Fragment {
                 Song list = App.getFavoritesDB().songDao().searchSongs(SongArtist, SongTitle);
                 if (list == null) {
                     App.getFavoritesDB().songDao().insert(song);
-                    listSongs.add(list);
+                    adapter.append(list);
                 } else {
-                    listSongs.add(list);
+                    adapter.append(list);
                 }
 
             } while (cursor.moveToNext());
 
+            adapter.notifyOriginSong();
+            adapter.sort();
         }
     }
 
