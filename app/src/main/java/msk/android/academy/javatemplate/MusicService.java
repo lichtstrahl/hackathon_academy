@@ -1,7 +1,6 @@
 package msk.android.academy.javatemplate;
 
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -20,8 +19,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -73,6 +70,7 @@ public class MusicService extends Service implements
     private boolean pushStart = false;
     private boolean pause = false;
     private SensorManager sensorManager;
+    private Sensor sensorRotation;
     private Sensor sensorAcceleration;
     private SensorEventListener listener = new SensorEventListener() {
         float[] rotMat = new float[9];
@@ -104,7 +102,37 @@ public class MusicService extends Service implements
                         player.start();
                     }
                 }
+            }
+        }
 
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {
+
+        }
+    };
+
+    private SensorEventListener listener2 = new SensorEventListener() {
+        private long lastUpdate = 0;
+        private float lastX, lastY, lastZ;
+        private static final int SHAKE_TRESHOLD = 3500;
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+           if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER && flip) {
+                float x = sensorEvent.values[0];
+                float y = sensorEvent.values[1];
+                float z = sensorEvent.values[2];
+                long currentTime = System.currentTimeMillis();
+                long dt = currentTime - lastUpdate;
+                if (dt > 100) {
+                    lastUpdate = currentTime;
+                    float speed = Math.abs(x + y +z - lastX - lastY - lastZ)/dt * 10000;
+                    if (speed > SHAKE_TRESHOLD) {
+                        playNext();
+                    }
+                    lastX = x;
+                    lastY = y;
+                    lastZ = z;
+                }
             }
         }
 
@@ -127,8 +155,10 @@ public class MusicService extends Service implements
         initMusicPlayer();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorAcceleration =
+        sensorRotation =
                 sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        sensorAcceleration =
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         mTimerDisposable = Observable.interval(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
@@ -170,7 +200,9 @@ public class MusicService extends Service implements
     //activity will bind to service
     @Override
     public IBinder onBind(Intent intent) {
-        sensorManager.registerListener(listener, sensorAcceleration,
+        sensorManager.registerListener(listener, sensorRotation,
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(listener2, sensorAcceleration,
                 SensorManager.SENSOR_DELAY_NORMAL);
         return musicBind;
     }
@@ -183,6 +215,7 @@ public class MusicService extends Service implements
         pause = true;
         //player.release();
         sensorManager.unregisterListener(listener);
+        sensorManager.unregisterListener(listener2);
         return false;
     }
 
