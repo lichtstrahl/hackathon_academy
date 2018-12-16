@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/progressInfo"
@@ -16,44 +16,88 @@
             android:layout_centerHorizontal="true"
             android:visibility="gone"/>
 
+
         <Button
             android:id="@+id/buttonReconnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:text="@string/reconnect"
             android:textSize="@dimen/smallText"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/viewImage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/imageHeight"
+            android:contentDescription="@string/artistArt" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/viewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/stdMargin"
+                android:maxLines="1"
+                android:textSize="@dimen/bigText"
+                tools:text="@tools:sample/full_names" />
+
+            <TextView
+                android:id="@+id/viewGenre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/stdMargin"
+                android:maxLines="1"
+                android:textSize="@dimen/bigText"
+                tools:text="@tools:sample/full_names" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/buttonFacebook"
+                android:layout_width="@dimen/xIcon"
+                android:layout_height="@dimen/xIcon"
+                android:backgroundTint="@android:color/transparent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_facebook" />
+
+            <ImageButton
+                android:id="@+id/buttonWebSite"
+                android:layout_width="@dimen/xIcon"
+                android:layout_height="@dimen/xIcon"
+                android:backgroundTint="@android:color/transparent"
+                android:scaleType="centerInside" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/viewTrackName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/progressInfo"
             android:layout_margin="@dimen/stdMargin"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textSize="@dimen/xText"/>
 
-        <android.support.v7.widget.CardView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/cardText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/trackTextHeight"
-            android:layout_below="@id/viewTrackName"
             android:layout_margin="@dimen/stdMargin"
-            android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/backgroundText"
-            app:cardCornerRadius="20dp">
+            app:cardCornerRadius="5dp">
 
             <android.support.v4.widget.NestedScrollView
-                android:id="@+id/srollText"
+                android:id="@+id/scrollText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/stdMargin"
-                android:layout_marginBottom="@dimen/stdMargin"
-                android:layout_marginStart="@dimen/bigMargin"
-                android:layout_marginEnd="@dimen/bigMargin">
+                android:layout_margin="@dimen/bigMargin">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -65,73 +109,37 @@
                         android:layout_height="@dimen/progressBarSize"
                         android:layout_gravity="center"
                         android:visibility="gone"/>
+
                     <TextView
                         android:id="@+id/viewTrackText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/xText"/>
+                        android:textSize="@dimen/bigText" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </android.support.v7.widget.CardView>
 
-        <TextView
-            android:id="@+id/viewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/cardText"
-            android:layout_alignStart="@id/cardText"
-            android:layout_margin="@dimen/stdMargin"
-            android:maxLines="1"
-            android:textSize="@dimen/bigText"
-            tools:text="@tools:sample/full_names" />
-        <TextView
-            android:id="@+id/viewGenre"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/cardText"
-            android:layout_alignEnd="@id/cardText"
-            android:layout_margin="@dimen/stdMargin"
-            android:maxLines="1"
-            android:textSize="@dimen/bigText"
-            tools:text="@tools:sample/full_names" />
-
-        <ImageView
-            android:id="@+id/viewImage"
+        <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cardBiography"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/imageHeight"
-            android:layout_below="@id/viewStyle"
-            android:contentDescription="@string/artistArt"/>
+            android:layout_height="@dimen/trackTextHeight"
+            android:layout_margin="@dimen/stdMargin"
+            app:cardCornerRadius="5dp">
 
-        <TextView
-            android:id="@+id/viewBiography"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/viewImage"
-            android:layout_marginStart="@dimen/stdMargin"
-            android:layout_marginEnd="@dimen/stdMargin"
-            android:textSize="@dimen/bigText"/>
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/scrollBiography"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/bigMargin">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/viewBiography"
-            android:layout_centerHorizontal="true">
-            <ImageButton
-                android:id="@+id/buttonFacebook"
-                android:layout_width="@dimen/xIcon"
-                android:layout_height="@dimen/xIcon"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_facebook"
-                android:backgroundTint="@android:color/transparent"/>
+                <TextView
+                    android:id="@+id/viewBiography"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/viewImage"
+                    android:textSize="@dimen/bigText" />
+            </android.support.v4.widget.NestedScrollView>
+        </android.support.v7.widget.CardView>
 
-            <ImageButton
-                android:id="@+id/buttonWebSite"
-                android:layout_width="@dimen/xIcon"
-                android:layout_height="@dimen/xIcon"
-                android:scaleType="centerCrop"
-                android:backgroundTint="@android:color/transparent"/>
-        </LinearLayout>
-
-
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

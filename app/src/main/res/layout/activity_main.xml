@@ -28,6 +28,14 @@
         android:gravity="center">
 
         <ImageButton
+            android:id="@+id/btn_flip"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_flip_to_back"
+            android:background="#00000000"
+            android:layout_margin="16dp"/>
+
+        <ImageButton
             android:id="@+id/btn_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -48,6 +56,14 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_skip_next"
+            android:background="#00000000"
+            android:layout_margin="16dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_shuffle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_shuffle"
             android:background="#00000000"
             android:layout_margin="16dp"/>
 
