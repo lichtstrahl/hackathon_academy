@@ -32,6 +32,7 @@ import msk.android.academy.javatemplate.events.GoPlayerEvent;
 import msk.android.academy.javatemplate.events.PausePlayerEvent;
 import msk.android.academy.javatemplate.events.PlayNextEvent;
 import msk.android.academy.javatemplate.events.PlayPrevEvent;
+import msk.android.academy.javatemplate.events.PlaySongEvent;
 import msk.android.academy.javatemplate.events.SeekEvent;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
@@ -45,6 +46,9 @@ public class PlayerFragment extends Fragment {
 
     private List<Song> songs;
     private int curPos;
+
+    private String name;
+    private String artist;
 
     @BindView(R.id.seek_bar)
     SeekBar seekBar;
@@ -142,7 +146,7 @@ public class PlayerFragment extends Fragment {
 
     @OnClick(R.id.btn_info)
     void onButtonInfo() {
-        EventBus.getDefault().post(new DetailsEvent("Linking Park", "numb"));
+        EventBus.getDefault().post(new DetailsEvent(artist, name));
     }
 
     //start and bind the service when the activity starts
@@ -151,6 +155,11 @@ public class PlayerFragment extends Fragment {
         super.onStart();
         if (listener != null){
             listener.startService();
+        }
+
+        if (PlayerFragment.sStart){
+            PlayerFragment.sStart = false;
+            EventBus.getDefault().post(new PlaySongEvent());
         }
 
         /*if (playIntent == null) {
@@ -163,6 +172,12 @@ public class PlayerFragment extends Fragment {
                 startService(playIntent);
             }
         }*/
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
     //@Override
@@ -188,7 +203,9 @@ public class PlayerFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateView(UpdateViewEvent event) {
-        tvName.setText(event.getName());
+        name = event.getName();
+        artist = event.getArtist();
+        tvName.setText(name + " - " + artist);
         tvTime.setText(getTimeText(event.getSeconds(), event.getDuration()));
         seekBar.setMax(event.getDuration());
         seekBar.setProgress(event.getSeconds());

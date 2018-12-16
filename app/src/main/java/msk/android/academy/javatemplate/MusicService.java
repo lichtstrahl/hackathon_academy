@@ -29,6 +29,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.events.UpdateViewEvent;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.ui.MainActivity;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
@@ -54,6 +55,7 @@ public class MusicService extends Service implements
     private boolean shuffle = false;
     private Random rand;
     private String name;
+    private String artist;
 
     private int duration = 0;
 
@@ -76,7 +78,7 @@ public class MusicService extends Service implements
     }
 
     private void onTimerUpdate(long totalSeconds) {
-        EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name));
+        EventBus.getDefault().post(new UpdateViewEvent(player.getCurrentPosition(), duration, name, artist));
     }
 
     public void initMusicPlayer() {
@@ -127,7 +129,8 @@ public class MusicService extends Service implements
         //get id
         long currSong = playSong.getAudioResourceId();
 
-        name = playSong.getArtist() + " - " + playSong.getTitle();
+        name = playSong.getTitle();
+        artist = playSong.getArtist();
 
         //set uri
         Uri trackUri = ContentUris.withAppendedId(
@@ -169,7 +172,7 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, SongListFragment.class);
+        Intent notIntent = new Intent(this, MainActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
