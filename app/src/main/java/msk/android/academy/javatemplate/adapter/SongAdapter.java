@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,13 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
 import msk.android.academy.javatemplate.events.SongClickEvent;
 import msk.android.academy.javatemplate.model.Song;
 import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.ui.App;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 

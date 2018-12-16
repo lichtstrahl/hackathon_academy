@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -19,6 +21,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import msk.android.academy.javatemplate.MusicService;
 import msk.android.academy.javatemplate.PlayerFragment;
 import msk.android.academy.javatemplate.R;
@@ -36,6 +39,9 @@ import msk.android.academy.javatemplate.model.Song;
 public class MainActivity extends AppCompatActivity implements PlayerFragment.PlayerFragmentListener {
     @BindView(R.id.layoutBG)
     ViewGroup layoutBG;
+
+    @BindView(R.id.btn_startstop)
+    ImageButton btnStartStop;
 
     //service
     private MusicService musicSrv;
@@ -144,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlaySong(@NonNull PlaySongEvent event) {
-        if (musicSrv!= null) {
+        if (musicSrv != null) {
             musicSrv.setList(songs);
             musicSrv.setSong(curPos);
             musicSrv.playSong();
@@ -202,5 +208,31 @@ public class MainActivity extends AppCompatActivity implements PlayerFragment.Pl
         } else {
             getSupportFragmentManager().popBackStack();
         }
+    }
+
+    @OnClick(R.id.btn_forward)
+    void onButtonForward() {
+        musicSrv.playNext();
+        //EventBus.getDefault().post(new PlayNextEvent());
+    }
+
+    @OnClick(R.id.btn_back)
+    void onButtonBack() {
+        musicSrv.playPrev();
+        //EventBus.getDefault().post(new PlayPrevEvent());
+    }
+
+    @OnClick(R.id.btn_startstop)
+    void onButtonStartStop() {
+        if (musicSrv.isPlaying()) {
+            musicSrv.pausePlayer();
+            btnStartStop.setImageResource(R.drawable.ic_play_circle_outline);
+            //EventBus.getDefault().post(new PausePlayerEvent());
+        } else {
+            musicSrv.go();
+            btnStartStop.setImageResource(R.drawable.ic_pause_circle_outline);
+            //EventBus.getDefault().post(new GoPlayerEvent());
+        }
+
     }
 }
