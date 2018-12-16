@@ -22,17 +22,17 @@ import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.ui.App;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
-    private Context context;
     private List<Song> songsList;
+    private LayoutInflater inflater;
 
-    public SongAdapter(Context context, List<Song> songsList) {
-        this.context = context;
+    public SongAdapter(LayoutInflater inflater, List<Song> songsList) {
+        this.inflater = inflater;
         this.songsList = songsList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.song_list_item, parent, false);
+        View view = inflater.inflate(R.layout.song_list_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -64,10 +64,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             image = view.findViewById(R.id.primary_action);
 
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //PlayerFragment.start(context, songsList, position);
+            view.setOnClickListener((v) -> {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         EventBus.getDefault().post(new SongClickEvent(songsList, position));
@@ -76,8 +73,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
                     Song song = songsList.get(position);
                     song.incrementCount();
                     App.getFavoritesDB().songDao().update(song);
-                }
-            });
+                });
         }
 
 
@@ -91,7 +87,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             String albumArtUri = String.valueOf(ContentUris.withAppendedId(
                     Uri.parse("content://media/external/audio/albumart"),song.getCover()));
 
-            GlideApp.with(context)
+            GlideApp.with(image.getContext())
                     .load(albumArtUri)
                     .into(image);
         }

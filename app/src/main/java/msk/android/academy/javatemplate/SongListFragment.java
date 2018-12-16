@@ -54,8 +54,7 @@ public class SongListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        adapter = new SongAdapter(getContext(), listSongs);
-
+        adapter = new SongAdapter(getLayoutInflater(), listSongs);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
