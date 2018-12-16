@@ -35,8 +35,8 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraint_version"
 
     // ButterKnife
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.jakewharton:butterknife:9.0.0-rc2'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc2'
 
     //dagger2
     //implementation  "com.google.dagger:dagger:$dagger2_version"
@@ -57,6 +57,11 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     implementation "android.arch.persistence.room:rxjava2:$room_version"
+    // Stetho
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+
+    // Stettho
+    implementation 'com.facebook.stetho:stetho:1.5.0'
 
     //LiveData + ViewModel
     implementation "android.arch.lifecycle:extensions:$jetpack_version"

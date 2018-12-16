@@ -1,31 +1,28 @@
 package msk.android.academy.javatemplate;
 
-import android.Manifest;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import msk.android.academy.javatemplate.adapter.SongAdapter;
 import msk.android.academy.javatemplate.model.Song;
+import msk.android.academy.javatemplate.ui.App;
 
 public class SongListFragment extends Fragment {
 
@@ -35,19 +32,26 @@ public class SongListFragment extends Fragment {
     private Cursor cursor;
     private Uri uri;
     private ArrayList<Song> listSongs;
-    private RecyclerView.LayoutManager layoutManager;
+    private EditText input;
+    private EditTextListener inputListener;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.song_list_activity);
         View view = inflater.inflate(R.layout.song_list_activity, container, false);
-
+        input = view.findViewById(R.id.searchInput);
+        inputListener = new EditTextListener(input);
         init(view);
         adapter();
+        inputListener.subscribe(adapter::setFilter);
         getAllMediaMp3Files();
-
         return view;
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        inputListener.unsubscribe();
     }
 
     private void init(View view) {
@@ -58,10 +62,14 @@ public class SongListFragment extends Fragment {
     private void adapter() {
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        adapter = new SongAdapter(getContext(), listSongs);
+        adapter = new SongAdapter(getLayoutInflater(), listSongs);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+        }
 
-        recyclerView.setLayoutManager(layoutManager);
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -83,24 +91,33 @@ public class SongListFragment extends Fragment {
             Toast.makeText(getContext(), "No Music Found on SD Card.", Toast.LENGTH_LONG).show();
         } else {
 
-            int Title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int Artist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int title = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int atrist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int id = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int duration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int albumId = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 
             do {
-                int SongID = cursor.getInt(id);
+                int songID = cursor.getInt(id);
 
-                String SongTitle = cursor.getString(Title);
-                String SongArtist = cursor.getString(Artist);
-                int SongDuration = cursor.getInt(duration);
+                String songTitle = cursor.getString(title);
+                String songArtist = cursor.getString(atrist);
+                int songDuration = cursor.getInt(duration);
                 long songAlbum = cursor.getLong(albumId);
 
-
-                listSongs.add(new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum));
+                Song song = new Song(songTitle, songArtist, getDuration(songDuration), songID, songAlbum);
+                Song list = App.getFavoritesDB().songDao().searchSongs(songArtist, songTitle);
+                if (list == null) {
+                    App.getFavoritesDB().songDao().insert(song);
+                    adapter.append(song);
+                } else {
+                    adapter.append(list);
+                }
 
             } while (cursor.moveToNext());
+
+            adapter.notifyOriginSong();
+            adapter.sort();
         }
     }
 

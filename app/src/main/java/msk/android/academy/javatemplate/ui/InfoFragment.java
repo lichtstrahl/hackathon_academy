@@ -1,6 +1,5 @@
 package msk.android.academy.javatemplate.ui;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +14,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.net.UnknownHostException;
 import java.util.Locale;
@@ -23,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
-import msk.android.academy.javatemplate.network.FullInfo;
+import msk.android.academy.javatemplate.db.InfoEntity;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.LyricResponse;
@@ -86,7 +89,7 @@ public class InfoFragment extends Fragment {
 
         // Если поворот экрана
         if (savedInstanceState != null) {
-            artistDTO = (ArtistDTO)savedInstanceState.getSerializable(SAVE_ARTIST);
+            artistDTO = (ArtistDTO) savedInstanceState.getSerializable(SAVE_ARTIST);
             textTrack = savedInstanceState.getString(SAVE_TEXT);
             viewTrackText.setText(textTrack);
             bindArtist(artistDTO);
@@ -95,8 +98,9 @@ public class InfoFragment extends Fragment {
         }
 
         // Даже если это поворот экрана, возможно загрузка не была завершена
-        if (savedInstanceState == null || artistDTO == null) {
+        if (savedInstanceState == null || artistDTO == null || track == null) {
             startLoad();
+            App.logI("Repeat load");
         }
 
         return view;
@@ -109,16 +113,31 @@ public class InfoFragment extends Fragment {
     }
 
     private void startLoad() {
-        App.getLyricAPI().getText(artist, track)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadLyricObserver);
-        App.getInfoAPI().searchArtist(artist)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadInfoObserver);
-        progressLoadText.setVisibility(View.VISIBLE);
-        progressLoadInfo.setVisibility(View.VISIBLE);
+        InfoEntity entity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+        if (entity == null) {
+            Observable oLyric = App.getLyricAPI().getText(artist, track);
+            Observable oInfo = App.getInfoAPI().searchArtist(artist);
+
+            oLyric
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadLyricObserver);
+
+            oInfo
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(loadInfoObserver);
+
+            progressLoadText.setVisibility(View.VISIBLE);
+            progressLoadInfo.setVisibility(View.VISIBLE);
+            Toast.makeText(this.getContext(), "В БД нету, грузим", Toast.LENGTH_LONG).show();
+        } else {
+            artistDTO = entity.toAtristDTO();
+            textTrack = entity.getLyric();
+            bindArtist(artistDTO);
+            viewTrackText.setText(!textTrack.isEmpty() ? textTrack : getString(R.string.notFoundTextForTrack));
+            Toast.makeText(this.getContext(), "Уже есть в БД. Нахер интернет", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -146,23 +165,45 @@ public class InfoFragment extends Fragment {
 
     private void successfulLoadInfo(InfoResponse res) {
         if (res.getArtists() == null) {
-            viewStyle.setText(R.string.notFoundInfoForArtist);
+            artistDTO = null;
+            bindArtist(artistDTO);
         } else {
             artistDTO = res.getArtists().get(0);
             bindArtist(artistDTO);
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, artistDTO);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromArtistDTO(artistDTO);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         }
         progressLoadInfo.setVisibility(View.GONE);
+        App.logI("Successful loadInfo");
     }
 
     private void successfulLoadText(LyricResponse res) {
         if (res.getError() == null) {
             textTrack = res.getLyrics();
             viewTrackText.setText(textTrack);
+
+            // Есть запись в БД для этого артиста и трека
+            InfoEntity bdEntity = App.getDB().getEntityDao().searchInfiEntity(artist, track);
+            if (bdEntity == null) {
+                InfoEntity entity = new InfoEntity(artist, track, textTrack);
+                App.getDB().getEntityDao().insert(entity);
+            } else {
+                bdEntity.fromLyric(textTrack);
+                App.getDB().getEntityDao().update(bdEntity);
+            }
         } else {
             textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
         }
         progressLoadText.setVisibility(View.GONE);
+        App.logI("Successful loadInfo");
     }
 
     // HttpException, UnkownHostException
@@ -174,12 +215,13 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            artistDTO = null;
             viewStyle.setText(R.string.notFoundInfoForArtist);
         }
 
 
         progressLoadInfo.setVisibility(View.GONE);
-        App.logE(t.getMessage());
+        App.logE("Error load info: " + t.getMessage());
     }
 
     private void errorLoadText(Throwable t) {
@@ -190,16 +232,19 @@ public class InfoFragment extends Fragment {
 
         // Ошибка при запросе
         if (t instanceof HttpException) {
+            textTrack = "";
             viewTrackText.setText(R.string.notFoundTextForTrack);
         }
 
         progressLoadText.setVisibility(View.GONE);
-        App.logE(t.getMessage());
+        App.logE("Error load text: " + t.getMessage());
     }
 
     private void bindArtist(@Nullable ArtistDTO artist) {
-        if (artist == null)
+        if (artist == null) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
             return;
+        }
         viewStyle.setText(artist.getStyle());
         viewGenre.setText(artist.getGenre());
 
@@ -211,6 +256,12 @@ public class InfoFragment extends Fragment {
 
         GlideApp.with(this).load(artist.getArtUrl()).centerCrop().into(viewArtistArt);
         GlideApp.with(this).load(artist.getArtistLogoUrl()).centerCrop().into(buttonWebSite);
+        Glide.with(this).load(artist.getArtUrl())
+                .apply(new RequestOptions().centerCrop())
+                .into(viewArtistArt);
+        Glide.with(this).load(artist.getArtistLogoUrl())
+                .apply(new RequestOptions().centerCrop())
+                .into(buttonWebSite);
 
         if (artist.getFacebookUrl() != null) {
             buttonFacebook.setOnClickListener(btn -> {
@@ -218,10 +269,12 @@ public class InfoFragment extends Fragment {
                     String url = UrlAdapter.adapt(artist.getFacebookUrl());
                     Intent facebookIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(facebookIntent);
-                } catch (Exception e){
+                } catch (Exception e) {
                     App.logE(e.getMessage());
                 }
             });
+        } else {
+            buttonFacebook.setVisibility(View.GONE);
         }
 
         if (artist.getWebSiteUrl() != null) {
@@ -234,6 +287,8 @@ public class InfoFragment extends Fragment {
                     App.logE(e.getMessage());
                 }
             });
+        } else {
+            buttonWebSite.setVisibility(View.GONE);
         }
     }
 }

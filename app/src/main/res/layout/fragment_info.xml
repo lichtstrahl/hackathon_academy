@@ -13,7 +13,9 @@
             android:id="@+id/progressInfo"
             android:layout_width="@dimen/progressBarSize"
             android:layout_height="@dimen/progressBarSize"
-            android:layout_gravity="center" />
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"/>
+
 
         <Button
             android:id="@+id/buttonReconnect"
@@ -105,7 +107,8 @@
                         android:id="@+id/progressText"
                         android:layout_width="@dimen/progressBarSize"
                         android:layout_height="@dimen/progressBarSize"
-                        android:layout_gravity="center" />
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/viewTrackText"
