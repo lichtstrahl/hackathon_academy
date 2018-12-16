@@ -144,25 +144,13 @@ public class InfoFragment extends Fragment {
         return iFragment;
     }
 
-    private void successfulLoad(FullInfo info) {
-        InfoResponse infoResponse = info.getInfoResponse();
-        LyricResponse lyricResponse = info.getLyricResponse();
-
-        if (lyricResponse.getError() == null) {
-            textTrack = lyricResponse.getLyrics();
-            viewTrackText.setText(textTrack);
-        } else {
-            textTrack = "";
-            viewTrackText.setText(lyricResponse.getError());
-        }
-
-        artistDTO = infoResponse.getArtists().get(0);
-        bindArtist(artistDTO);
-    }
-
     private void successfulLoadInfo(InfoResponse res) {
-        artistDTO = res.getArtists().get(0);
-        bindArtist(artistDTO);
+        if (res.getArtists() == null) {
+            viewStyle.setText(R.string.notFoundInfoForArtist);
+        } else {
+            artistDTO = res.getArtists().get(0);
+            bindArtist(artistDTO);
+        }
         progressLoadInfo.setVisibility(View.GONE);
     }
 
@@ -172,7 +160,7 @@ public class InfoFragment extends Fragment {
             viewTrackText.setText(textTrack);
         } else {
             textTrack = "";
-            viewTrackText.setText(res.getError());
+            viewTrackText.setText(R.string.notFoundTextForTrack);
         }
         progressLoadText.setVisibility(View.GONE);
     }

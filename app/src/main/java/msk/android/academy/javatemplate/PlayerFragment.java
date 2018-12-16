@@ -142,7 +142,7 @@ public class PlayerFragment extends Fragment {
 
     @OnClick(R.id.btn_info)
     void onButtonInfo() {
-        EventBus.getDefault().post(new DetailsEvent("Linking Park", "numb"));
+        EventBus.getDefault().post(new DetailsEvent("Linkin Park", "numb"));
     }
 
     //start and bind the service when the activity starts
