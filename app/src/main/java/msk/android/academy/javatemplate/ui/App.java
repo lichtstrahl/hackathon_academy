@@ -21,14 +21,14 @@ public class App extends Application {
     private static final String DATABASE_NAME = "alexDataBase";
     private static LyricAPI lyricAPI;
     private static InfoAPI infoAPI;
-    private static AppDatabase database;
+    private static AppDatabase favoritesDB;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
 
-        database = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME)
+        favoritesDB = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME)
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build();
@@ -76,7 +76,7 @@ public class App extends Application {
         Log.w(BuildConfig.TAG_GLOBAL, msg);
     }
 
-    public static AppDatabase getDatabase() {
-        return database;
+    public static AppDatabase getFavoritesDB() {
+        return favoritesDB;
     }
 }

@@ -92,7 +92,7 @@ public class SongListFragment extends Fragment {
                 long songAlbum = cursor.getLong(albumId);
 
                 Song song = new Song(SongTitle, SongArtist, getDuration(SongDuration), SongID, songAlbum);
-                App.getDatabase().songDao().insert(song);
+                App.getFavoritesDB().songDao().insert(song);
                 listSongs.add(song);
 
             } while (cursor.moveToNext());
