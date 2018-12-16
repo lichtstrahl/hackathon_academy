@@ -9,6 +9,8 @@ import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -307,8 +309,11 @@ public class MusicService extends Service implements
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
 
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.headphone_icon);
+
         builder.setContentIntent(pendInt)
                 .setSmallIcon(R.drawable.ic_launcher_background)
+                .setLargeIcon(bm)
                 .setTicker(songTitle)
                 .setOngoing(true)
                 .setContentTitle(text)
