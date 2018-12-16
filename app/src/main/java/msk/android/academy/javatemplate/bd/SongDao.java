@@ -19,6 +19,9 @@ public interface SongDao {
     @Query("SELECT * FROM song WHERE id = :id")
     Song getById(long id);
 
+    @Query("SELECT * FROM song WHERE title = :title AND artist = :artist")
+    List<Song> searchSongs(String artist, String title);
+
     @Insert
     void insert(Song employee);
 

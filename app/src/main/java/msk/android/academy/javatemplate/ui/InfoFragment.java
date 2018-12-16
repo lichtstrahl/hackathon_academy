@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import msk.android.academy.javatemplate.R;
@@ -31,6 +32,7 @@ import msk.android.academy.javatemplate.db.InfoEntity;
 import msk.android.academy.javatemplate.network.dto.ArtistDTO;
 import msk.android.academy.javatemplate.network.dto.InfoResponse;
 import msk.android.academy.javatemplate.network.dto.LyricResponse;
+import msk.android.academy.javatemplate.network.util.GlideApp;
 import msk.android.academy.javatemplate.network.util.NetworkObserver;
 import msk.android.academy.javatemplate.network.util.UrlAdapter;
 import retrofit2.HttpException;
